@@ -1,0 +1,37 @@
+<RCC>
+  <qresource prefix="Language">
+    <file alias="Dutch">i18n_Dutch.qm</file>
+    <file alias="English">i18n_English.qm</file>
+    <file alias="Italian">i18n_Italian.qm</file>
+    <file alias="French">i18n_French.qm</file>
+    <file alias="German">i18n_German.qm</file>
+    <file alias="Spanish">i18n_Spanish.qm</file>
+  </qresource>
+  <qresource prefix="Images/Edit">
+    <file alias="Clear">images/edit_clear.png</file>
+    <file alias="Copy">images/edit_copy.png</file>
+    <file alias="Cut">images/edit_cut.png</file>
+    <file alias="Paste">images/edit_paste.png</file>
+    <file alias="Redo">images/edit_redo.png</file>
+    <file alias="SelectAll">images/edit_selectall.png</file>
+    <file alias="Undo">images/edit_undo.png</file>
+  </qresource>
+  <qresource prefix="Images/App">
+    <file alias="Exit">images/application_exit.png</file>
+  </qresource>
+  <qresource prefix="Images/File">
+    <file alias="New">images/document_new.png</file>
+    <file alias="Open">images/document_open.png</file>
+    <file alias="Save">images/document_save.png</file>
+    <file alias="SaveAs">images/document_saveas.png</file>
+  </qresource>
+  <qresource prefix="Images/Window">
+    <file alias="Close">images/window_close.png</file>
+    <file alias="Next">images/window_next.png</file>
+    <file alias="Prev">images/window_prev.png</file>
+  </qresource>
+  <qresource prefix="Font">
+    <file alias="FiraCodeRegular">fonts/FiraCode-Regular.ttf</file>
+    <file alias="FiraMonoRegular">fonts/FiraMono-Regular.ttf</file>
+  </qresource>
+</RCC>
