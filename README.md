@@ -37,3 +37,9 @@ cmake provides a clean target so "make clean" works, but there is no distclean
 target. In that case the is the distclean.sh script in the scripts directory.
 Just run "./scripts/Distclean.sh" after a "make clean" to achieve the distclean
 effect.
+
+<br></br>
+<p align="center">
+<img src="./demo_images/coed.png" alt="CoEd">
+<img src="./demo_images/coed_dark.png" alt="Coed Dark Mode">
+</p>
