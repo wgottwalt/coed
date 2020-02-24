@@ -38,5 +38,6 @@ target. In that case the is the distclean.sh script in the scripts directory.
 Just run "./scripts/Distclean.sh" after a "make clean" to achieve the distclean
 effect.
 
+Screenshots
 ![CoEd Screenshot](./demo_images/coed.png)
-![CoEd Dark Mode Screenshot](./demo_images/coed_dark.png" alt="Coed Dark Mode)
+![CoEd Dark Mode Screenshot](./demo_images/coed_dark.png")
