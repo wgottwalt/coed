@@ -30,8 +30,8 @@ The requirements are quite simple:
 - cmake 3.0
 
 How to build:
-> cmake .
-> make
+- cmake .
+- make
 
 cmake provides a clean target so "make clean" works, but there is no distclean
 target. In that case the is the distclean.sh script in the scripts directory.
