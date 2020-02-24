@@ -40,4 +40,4 @@ effect.
 
 Screenshots
 ![CoEd Screenshot](./demo_images/coed.png)
-![CoEd Dark Mode Screenshot](./demo_images/coed_dark.png")
+![CoEd Dark Mode Screenshot](./demo_images/coed_dark.png)
