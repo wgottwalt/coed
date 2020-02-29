@@ -2,16 +2,11 @@
 
 #include <QTextDocument>
 #include <QWidget>
+#include "ui_SearchWindow.h"
 
-namespace Ui { class SearchWindow; }
-class QEvent;
-
-class SearchWindow : public QWidget {
+class SearchWindow : public QWidget, protected Ui::SearchWindow {
     Q_OBJECT
 public:
-    //--- public properties ---
-    Ui::SearchWindow *ui;
-
     //--- public constructors ---
     SearchWindow(QWidget *parent = nullptr);
     SearchWindow(const SearchWindow &rhs) = delete;
@@ -22,10 +17,12 @@ public:
     SearchWindow &operator=(const SearchWindow &rhs) = delete;
     SearchWindow &operator=(SearchWindow &&rhs) = delete;
 
+    //--- public methods ---
+    void setSearchString(const QString &str);
+
 protected:
     //--- protected methods ---
     virtual void changeEvent(QEvent *event) override final;
-
     void setupActions();
 
 signals:

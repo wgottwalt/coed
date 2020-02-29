@@ -315,8 +315,8 @@ void MainWindow::setupActions()
     connect(ui->wid_mdi, &QMdiArea::subWindowActivated, [&](QMdiSubWindow *window)
     {
         if (window)
-            search->ui->wid_lineedit->setText(
-                qobject_cast<EditorWindow *>(window->widget())->ui_edit->searchString());
+            search->setSearchString(qobject_cast<EditorWindow *>(
+                window->widget())->ui_edit->searchString());
         else
             search->hide();
     });
