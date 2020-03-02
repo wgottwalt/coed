@@ -41,8 +41,8 @@ void LineNumberArea::paintEvent(QPaintEvent *event)
 //--- public constructors ---
 
 EditorArea::EditorArea(QWidget *parent)
-: QPlainTextEdit(parent), ui_lna(new LineNumberArea(this)), _search_string(""),
-  _font(QFont("Fira Code", 12)), _fontw(QFontMetrics(_font).horizontalAdvance(QLatin1Char('X'))),
+: QPlainTextEdit(parent), ui_lna(new LineNumberArea(this)), _font(QFont("Fira Code", 12)),
+  _fontw(QFontMetrics(_font).horizontalAdvance(QLatin1Char('X'))),
   _fonth(QFontMetrics(_font).height()), _tabwidth(8), _use_smartfont(true), _use_wordwrap(true),
   _show_linenumbers(true), _show_linehighlight(true), _tabs_to_spaces(false)
 {
@@ -63,16 +63,6 @@ EditorArea::~EditorArea()
 }
 
 //--- public methods ---
-
-void EditorArea::setSearchString(const QString &str)
-{
-    _search_string = str;
-}
-
-QString EditorArea::searchString() const
-{
-    return _search_string;
-}
 
 void EditorArea::setSmartFont(const bool on)
 {
@@ -279,19 +269,20 @@ void EditorArea::updateLineHighlight()
 //--- public constructors ---
 
 EditorWindow::EditorWindow(QWidget *parent)
-: QWidget(parent), Ui::EditorWindow(), ui_edit(new EditorArea(this)), id(__counter++),
-  undo_available(false), redo_available(false), text_changed(false), filename_set(false),
-  _filename(""), _syntax(nullptr)
+: QWidget(parent), Ui::EditorWindow(), _filename(""), _search_string(""),
+  _ui_edit(new EditorArea(this)), _syntax(nullptr), _id(__counter++), _undo_ready(false),
+  _redo_ready(false), _text_changed(false), _filename_set(false)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
     setupUi(this);
-    lay_main->addWidget(ui_edit);
-    btn_smartfont->setChecked(ui_edit->smartFont());
-    btn_wordwrap->setChecked(ui_edit->wordWrap());
-    btn_linenumbers->setChecked(ui_edit->showLineNumbers());
-    btn_linehighlight->setChecked(ui_edit->showLineHighlight());
-    btn_tab->setChecked(ui_edit->tabsToSpaces());
+    lay_main->addWidget(_ui_edit);
+
+    btn_smartfont->setChecked(_ui_edit->smartFont());
+    btn_wordwrap->setChecked(_ui_edit->wordWrap());
+    btn_linenumbers->setChecked(_ui_edit->showLineNumbers());
+    btn_linehighlight->setChecked(_ui_edit->showLineHighlight());
+    btn_tab->setChecked(_ui_edit->tabsToSpaces());
     box_syntax->addItem(tr("I18N_SYNTAX_NONE"), QVariant::fromValue(Types::Syntax::None));
     box_syntax->addItem(tr("I18N_SYNTAX_CXX"), QVariant::fromValue(Types::Syntax::CXX));
     box_subsyntax->setVisible(false);
@@ -307,25 +298,20 @@ EditorWindow::~EditorWindow()
 {
     if (_syntax)
         delete _syntax;
-    delete ui_edit;
+    delete _ui_edit;
 }
 
 //--- public methods/slots ---
-
-QString EditorWindow::filename() const
-{
-    return filename_set ? _filename : "";
-}
 
 bool EditorWindow::openFile(const QString &filename)
 {
     if (QFile ifile(filename); ifile.exists() && ifile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        ui_edit->setPlainText(ifile.readAll());
+        _ui_edit->setPlainText(ifile.readAll());
         ifile.close();
 
-        text_changed = false;
-        filename_set = true;
+        _text_changed = false;
+        _filename_set = true;
         _filename = filename;
 
         box_syntax->setCurrentIndex(box_syntax->findData(QVariant::fromValue(
@@ -345,11 +331,11 @@ bool EditorWindow::saveFile(const QString &filename)
 {
     if (QFile ofile(filename); ofile.open(QIODevice::WriteOnly))
     {
-        ofile.write(ui_edit->toPlainText().toUtf8());
+        ofile.write(_ui_edit->toPlainText().toUtf8());
         ofile.close();
 
-        text_changed = false;
-        filename_set = true;
+        _text_changed = false;
+        _filename_set = true;
         _filename = filename;
 
         updateWindowTitle();
@@ -363,11 +349,80 @@ bool EditorWindow::saveFile(const QString &filename)
 void EditorWindow::search(const QString &str, const QTextDocument::FindFlags flags,
     const bool use_regexp)
 {
-    ui_edit->setSearchString(str);
+    _search_string = str;
     if (use_regexp)
-        ui_edit->find(QRegExp(str), flags);
+        _ui_edit->find(QRegExp(str), flags);
     else
-        ui_edit->find(str, flags);
+        _ui_edit->find(str, flags);
+}
+
+QString EditorWindow::searchString() const
+{
+    return _search_string;
+}
+
+QString EditorWindow::filename() const
+{
+    return _filename_set ? _filename : "";
+}
+
+bool EditorWindow::undoIsReady() const
+{
+    return _undo_ready;
+}
+
+bool EditorWindow::redoIsReady() const
+{
+    return _redo_ready;
+}
+
+bool EditorWindow::textHasChanged() const
+{
+    return _text_changed;
+}
+
+bool EditorWindow::filenameIsSet() const
+{
+    return _filename_set;
+}
+
+QTextCursor EditorWindow::textCursor()
+{
+    return _ui_edit->textCursor();
+}
+
+void EditorWindow::doTextAction(const Types::TextAction action)
+{
+    switch (action)
+    {
+        case Types::TextAction::Undo:
+            _ui_edit->undo();
+            return;
+
+        case Types::TextAction::Redo:
+            _ui_edit->redo();
+            return;
+
+        case Types::TextAction::Cut:
+            _ui_edit->cut();
+            return;
+
+        case Types::TextAction::Copy:
+            _ui_edit->copy();
+            return;
+
+        case Types::TextAction::Paste:
+            _ui_edit->paste();
+            return;
+
+        case Types::TextAction::Delete:
+            _ui_edit->textCursor().clearSelection();
+            return;
+
+        case Types::TextAction::SelectAll:
+            _ui_edit->selectAll();
+            return;
+    }
 }
 
 //--- protected methods ---
@@ -382,43 +437,43 @@ void EditorWindow::changeEvent(QEvent *event)
 
 void EditorWindow::setupActions()
 {
-    connect(ui_edit, &QPlainTextEdit::undoAvailable, [&](const bool a){ undo_available = a; });
-    connect(ui_edit, &QPlainTextEdit::redoAvailable, [&](const bool a){ redo_available = a; });
-    connect(ui_edit, &QPlainTextEdit::textChanged, [&]()
+    connect(_ui_edit, &QPlainTextEdit::undoAvailable, [&](const bool a){ _undo_ready = a; });
+    connect(_ui_edit, &QPlainTextEdit::redoAvailable, [&](const bool a){ _redo_ready = a; });
+    connect(_ui_edit, &QPlainTextEdit::textChanged, [&]()
     {
-        text_changed = true;
+        _text_changed = true;
         updateWindowTitle();
         updatePanelLines();
     });
-    connect(ui_edit, &QPlainTextEdit::cursorPositionChanged, [&](){ updatePanelPosition(); });
+    connect(_ui_edit, &QPlainTextEdit::cursorPositionChanged, [&](){ updatePanelPosition(); });
 
-    connect(btn_smartfont, &QToolButton::clicked, ui_edit, &EditorArea::setSmartFont);
-    connect(btn_wordwrap, &QToolButton::clicked, ui_edit, &EditorArea::setWordWrap);
-    connect(btn_linenumbers, &QToolButton::clicked, ui_edit, &EditorArea::setShowLineNumbers);
-    connect(btn_linehighlight, &QToolButton::clicked, ui_edit,
+    connect(btn_smartfont, &QToolButton::clicked, _ui_edit, &EditorArea::setSmartFont);
+    connect(btn_wordwrap, &QToolButton::clicked, _ui_edit, &EditorArea::setWordWrap);
+    connect(btn_linenumbers, &QToolButton::clicked, _ui_edit, &EditorArea::setShowLineNumbers);
+    connect(btn_linehighlight, &QToolButton::clicked, _ui_edit,
         &EditorArea::setShowLineHighlight);
-    connect(btn_tab, &QToolButton::clicked, ui_edit, &EditorArea::setTabsToSpaces);
+    connect(btn_tab, &QToolButton::clicked, _ui_edit, &EditorArea::setTabsToSpaces);
     connect(btn_tabwidth, static_cast<void (QSpinBox::*)(qint32)>(&QSpinBox::valueChanged),
-        ui_edit, &EditorArea::setTabWidth);
+        _ui_edit, &EditorArea::setTabWidth);
     connect(box_syntax, static_cast<void (QComboBox::*)(qint32)>(&QComboBox::currentIndexChanged),
         this, &EditorWindow::switchSyntax);
 }
 
 void EditorWindow::updateWindowTitle()
 {
-    setWindowTitle("(" + QString::number(id) + ") " +
-        (_filename.size() ? _filename : tr("I18N_UNKNOWN_FILE")) + (text_changed ? "*" : ""));
+    setWindowTitle("(" + QString::number(_id) + ") " +
+        (_filename.size() ? _filename : tr("I18N_UNKNOWN_FILE")) + (_text_changed ? "*" : ""));
 }
 
 void EditorWindow::updatePanelLines()
 {
-    lab_lines->setText(QString::number(ui_edit->document()->lineCount()));
+    lab_lines->setText(QString::number(_ui_edit->document()->lineCount()));
 }
 
 void EditorWindow::updatePanelPosition()
 {
-    const quint32 xpos = ui_edit->textCursor().positionInBlock();
-    const quint32 ypos = ui_edit->textCursor().blockNumber();
+    const quint32 xpos = _ui_edit->textCursor().positionInBlock();
+    const quint32 ypos = _ui_edit->textCursor().blockNumber();
 
     lab_pos->setText(QString::number(xpos) + ", " + QString::number(ypos));
 }
@@ -446,7 +501,7 @@ void EditorWindow::switchSyntax(const qint32 index)
     switch (box_syntax->itemData(index).value<Types::Syntax>())
     {
         case Types::Syntax::CXX:
-            _syntax = new SyntaxCXX(ui_edit->document());
+            _syntax = new SyntaxCXX(_ui_edit->document());
 
             box_subsyntax->addItem(tr("I18N_CXX_STD98"),
                 QVariant::fromValue(Types::CXX::STD98));

@@ -26,6 +26,16 @@ namespace Types
         CXX
     };
 
+    enum class TextAction : quint8 {
+        Undo,
+        Redo,
+        Cut,
+        Copy,
+        Paste,
+        Delete,
+        SelectAll
+    };
+
     enum class Theme : quint8 {
         Fusion,
         QtCurve,
@@ -36,6 +46,7 @@ namespace Types
 Q_DECLARE_METATYPE(Types::CXX)
 Q_DECLARE_METATYPE(Types::Language)
 Q_DECLARE_METATYPE(Types::Syntax)
+Q_DECLARE_METATYPE(Types::TextAction)
 Q_DECLARE_METATYPE(Types::Theme)
 
 const QString cxxToString(const Types::CXX cxx);

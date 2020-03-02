@@ -105,8 +105,8 @@ void MainWindow::setupActions()
 
         //ui->me_file_new->setEnabled(true);
         //ui->me_file_open->setEnabled(true);
-        ui->me_file_save->setEnabled((editor && editor->filename_set &&
-            editor->text_changed) ? true : false);
+        ui->me_file_save->setEnabled((editor && editor->filenameIsSet() &&
+            editor->textHasChanged()) ? true : false);
         ui->me_file_saveas->setEnabled(editor ? true : false);
         //ui->me_file_exit->setEnabled(true);
     });
@@ -127,7 +127,7 @@ void MainWindow::setupActions()
     {
         auto *editor = currentEditor();
 
-        if (editor && editor->filename_set)
+        if (editor && editor->filenameIsSet())
             editor->saveFile(editor->filename());
     });
 
@@ -155,58 +155,58 @@ void MainWindow::setupActions()
     {
         auto *editor = currentEditor();
 
-        ui->me_edit_undo->setEnabled((editor && editor->undo_available) ? true : false);
-        ui->me_edit_redo->setEnabled((editor && editor->redo_available) ? true : false);
+        ui->me_edit_undo->setEnabled((editor && editor->undoIsReady()) ? true : false);
+        ui->me_edit_redo->setEnabled((editor && editor->redoIsReady()) ? true : false);
         ui->me_edit_cut->setEnabled((editor &&
-            editor->ui_edit->textCursor().selectedText().size()) ? true : false);
+            editor->textCursor().selectedText().size()) ? true : false);
         ui->me_edit_copy->setEnabled((editor &&
-            editor->ui_edit->textCursor().selectedText().size()) ? true : false);
+            editor->textCursor().selectedText().size()) ? true : false);
         ui->me_edit_paste->setEnabled(editor ? true : false);
         ui->me_edit_clear->setEnabled((editor &&
-            editor->ui_edit->textCursor().selectedText().size()) ? true : false);
+            editor->textCursor().selectedText().size()) ? true : false);
         ui->me_edit_selectall->setEnabled(editor ? true : false);
     });
 
     connect(ui->me_edit_undo, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
-            editor->ui_edit->undo();
+            editor->doTextAction(Types::TextAction::Undo);
     });
 
     connect(ui->me_edit_redo, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
-            editor->ui_edit->redo();
+            editor->doTextAction(Types::TextAction::Redo);
     });
 
     connect(ui->me_edit_cut, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
-            editor->ui_edit->cut();
+            editor->doTextAction(Types::TextAction::Cut);
     });
 
     connect(ui->me_edit_copy, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
-            editor->ui_edit->copy();
+            editor->doTextAction(Types::TextAction::Copy);
     });
 
     connect(ui->me_edit_paste, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
-            editor->ui_edit->paste();
+            editor->doTextAction(Types::TextAction::Paste);
     });
 
     connect(ui->me_edit_clear, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
-            editor->ui_edit->textCursor().clearSelection();
+            editor->doTextAction(Types::TextAction::Delete);
     });
 
     connect(ui->me_edit_selectall, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
-            editor->ui_edit->selectAll();
+            editor->doTextAction(Types::TextAction::SelectAll);
     });
 
     // search menu
@@ -316,7 +316,7 @@ void MainWindow::setupActions()
     {
         if (window)
             search->setSearchString(qobject_cast<EditorWindow *>(
-                window->widget())->ui_edit->searchString());
+                window->widget())->searchString());
         else
             search->hide();
     });

@@ -59,8 +59,6 @@ public:
     EditorArea &operator=(EditorArea &&rhs) = delete;
 
     //--- public methods ---
-    void setSearchString(const QString &str);
-    QString searchString() const;
     void setSmartFont(const bool on = true);
     bool smartFont() const;
     void setWordWrap(const bool on = true);
@@ -89,7 +87,6 @@ protected:
 private:
     //--- private properties ---
     LineNumberArea *ui_lna;
-    QString _search_string;
     QFont _font;
     qint32 _fontw;
     qint32 _fonth;
@@ -106,14 +103,6 @@ private:
 class EditorWindow : public QWidget, protected Ui::EditorWindow {
     Q_OBJECT
 public:
-    //--- public properties ---
-    EditorArea *ui_edit;
-    const quint32 id;
-    bool undo_available;
-    bool redo_available;
-    bool text_changed;
-    bool filename_set;
-
     //--- public constructors ---
     EditorWindow(QWidget *parent = nullptr);
     EditorWindow(const EditorWindow &rhs) = delete;
@@ -124,11 +113,18 @@ public:
     EditorWindow &operator=(const EditorWindow &rhs) = delete;
     EditorWindow &operator=(EditorWindow &&rhs) = delete;
 
-    //--- public methods/slots ---
-    QString filename() const;
+    //--- public methods ---
     bool openFile(const QString &filename);
     bool saveFile(const QString &filename = "");
     void search(const QString &str, const QTextDocument::FindFlags flags, const bool use_regexp);
+    QString searchString() const;
+    QString filename() const;
+    bool undoIsReady() const;
+    bool redoIsReady() const;
+    bool textHasChanged() const;
+    bool filenameIsSet() const;
+    QTextCursor textCursor();
+    void doTextAction(const Types::TextAction action);
 
 protected:
     //--- protected methods ---
@@ -141,7 +137,14 @@ protected:
 private:
     //--- private properties ---
     QString _filename;
+    QString _search_string;
+    EditorArea *_ui_edit;
     QSyntaxHighlighter *_syntax;
+    quint32 _id;
+    bool _undo_ready;
+    bool _redo_ready;
+    bool _text_changed;
+    bool _filename_set;
 
     //--- private methods ---
     Types::Syntax detectFileType(const QFile &file) const;
