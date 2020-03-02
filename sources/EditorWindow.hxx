@@ -4,8 +4,8 @@
 #include <QPlainTextEdit>
 #include <QWidget>
 #include "Types.hxx"
+#include "ui_EditorWindow.h"
 
-namespace Ui { class EditorWindow; }
 class QEvent;
 class QPaintEvent;
 class QKeyEvent;
@@ -103,11 +103,10 @@ private:
 
 //----------------------------------------------------------------------------//
 
-class EditorWindow : public QWidget {
+class EditorWindow : public QWidget, protected Ui::EditorWindow {
     Q_OBJECT
 public:
     //--- public properties ---
-    Ui::EditorWindow *ui;
     EditorArea *ui_edit;
     const quint32 id;
     bool undo_available;

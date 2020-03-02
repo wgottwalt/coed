@@ -4,7 +4,6 @@
 #include <QFont>
 #include <QPainter>
 #include "EditorWindow.hxx"
-#include "ui_EditorWindow.h"
 #include "SyntaxCXX.hxx"
 
 //--- internal stuff ---
@@ -280,22 +279,22 @@ void EditorArea::updateLineHighlight()
 //--- public constructors ---
 
 EditorWindow::EditorWindow(QWidget *parent)
-: QWidget(parent), ui(new Ui::EditorWindow), ui_edit(new EditorArea(this)), id(__counter++),
+: QWidget(parent), Ui::EditorWindow(), ui_edit(new EditorArea(this)), id(__counter++),
   undo_available(false), redo_available(false), text_changed(false), filename_set(false),
   _filename(""), _syntax(nullptr)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    ui->setupUi(this);
-    ui->lay_main->addWidget(ui_edit);
-    ui->btn_smartfont->setChecked(ui_edit->smartFont());
-    ui->btn_wordwrap->setChecked(ui_edit->wordWrap());
-    ui->btn_linenumbers->setChecked(ui_edit->showLineNumbers());
-    ui->btn_linehighlight->setChecked(ui_edit->showLineHighlight());
-    ui->btn_tab->setChecked(ui_edit->tabsToSpaces());
-    ui->box_syntax->addItem(tr("I18N_SYNTAX_NONE"), QVariant::fromValue(Types::Syntax::None));
-    ui->box_syntax->addItem(tr("I18N_SYNTAX_CXX"), QVariant::fromValue(Types::Syntax::CXX));
-    ui->box_subsyntax->setVisible(false);
+    setupUi(this);
+    lay_main->addWidget(ui_edit);
+    btn_smartfont->setChecked(ui_edit->smartFont());
+    btn_wordwrap->setChecked(ui_edit->wordWrap());
+    btn_linenumbers->setChecked(ui_edit->showLineNumbers());
+    btn_linehighlight->setChecked(ui_edit->showLineHighlight());
+    btn_tab->setChecked(ui_edit->tabsToSpaces());
+    box_syntax->addItem(tr("I18N_SYNTAX_NONE"), QVariant::fromValue(Types::Syntax::None));
+    box_syntax->addItem(tr("I18N_SYNTAX_CXX"), QVariant::fromValue(Types::Syntax::CXX));
+    box_subsyntax->setVisible(false);
 
     setupActions();
 
@@ -309,7 +308,6 @@ EditorWindow::~EditorWindow()
     if (_syntax)
         delete _syntax;
     delete ui_edit;
-    delete ui;
 }
 
 //--- public methods/slots ---
@@ -330,7 +328,7 @@ bool EditorWindow::openFile(const QString &filename)
         filename_set = true;
         _filename = filename;
 
-        ui->box_syntax->setCurrentIndex(ui->box_syntax->findData(QVariant::fromValue(
+        box_syntax->setCurrentIndex(box_syntax->findData(QVariant::fromValue(
             detectFileType(ifile))));
 
         updateWindowTitle();
@@ -377,7 +375,7 @@ void EditorWindow::search(const QString &str, const QTextDocument::FindFlags fla
 void EditorWindow::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::LanguageChange)
-        ui->retranslateUi(this);
+        retranslateUi(this);
 
     QWidget::changeEvent(event);
 }
@@ -394,17 +392,16 @@ void EditorWindow::setupActions()
     });
     connect(ui_edit, &QPlainTextEdit::cursorPositionChanged, [&](){ updatePanelPosition(); });
 
-    connect(ui->btn_smartfont, &QToolButton::clicked, ui_edit, &EditorArea::setSmartFont);
-    connect(ui->btn_wordwrap, &QToolButton::clicked, ui_edit, &EditorArea::setWordWrap);
-    connect(ui->btn_linenumbers, &QToolButton::clicked, ui_edit, &EditorArea::setShowLineNumbers);
-    connect(ui->btn_linehighlight, &QToolButton::clicked, ui_edit,
+    connect(btn_smartfont, &QToolButton::clicked, ui_edit, &EditorArea::setSmartFont);
+    connect(btn_wordwrap, &QToolButton::clicked, ui_edit, &EditorArea::setWordWrap);
+    connect(btn_linenumbers, &QToolButton::clicked, ui_edit, &EditorArea::setShowLineNumbers);
+    connect(btn_linehighlight, &QToolButton::clicked, ui_edit,
         &EditorArea::setShowLineHighlight);
-    connect(ui->btn_tab, &QToolButton::clicked, ui_edit, &EditorArea::setTabsToSpaces);
-    connect(ui->btn_tabwidth, static_cast<void (QSpinBox::*)(qint32)>(&QSpinBox::valueChanged),
+    connect(btn_tab, &QToolButton::clicked, ui_edit, &EditorArea::setTabsToSpaces);
+    connect(btn_tabwidth, static_cast<void (QSpinBox::*)(qint32)>(&QSpinBox::valueChanged),
         ui_edit, &EditorArea::setTabWidth);
-    connect(ui->box_syntax,
-        static_cast<void (QComboBox::*)(qint32)>(&QComboBox::currentIndexChanged), this,
-        &EditorWindow::switchSyntax);
+    connect(box_syntax, static_cast<void (QComboBox::*)(qint32)>(&QComboBox::currentIndexChanged),
+        this, &EditorWindow::switchSyntax);
 }
 
 void EditorWindow::updateWindowTitle()
@@ -415,7 +412,7 @@ void EditorWindow::updateWindowTitle()
 
 void EditorWindow::updatePanelLines()
 {
-    ui->lab_lines->setText(QString::number(ui_edit->document()->lineCount()));
+    lab_lines->setText(QString::number(ui_edit->document()->lineCount()));
 }
 
 void EditorWindow::updatePanelPosition()
@@ -423,7 +420,7 @@ void EditorWindow::updatePanelPosition()
     const quint32 xpos = ui_edit->textCursor().positionInBlock();
     const quint32 ypos = ui_edit->textCursor().blockNumber();
 
-    ui->lab_pos->setText(QString::number(xpos) + ", " + QString::number(ypos));
+    lab_pos->setText(QString::number(xpos) + ", " + QString::number(ypos));
 }
 
 //--- private methods ---
@@ -433,7 +430,7 @@ Types::Syntax EditorWindow::detectFileType(const QFile &file) const
     const QFileInfo info(file);
 
     if ((info.suffix() == "cc") || (info.suffix() == "cpp") || (info.suffix() == "cxx") ||
-        (info.suffix() == "hpp") || (info.suffix() == "hxx"))
+        (info.suffix() == "h") || (info.suffix() == "hpp") || (info.suffix() == "hxx"))
         return Types::Syntax::CXX;
 
     return Types::Syntax::None;
@@ -444,31 +441,31 @@ void EditorWindow::switchSyntax(const qint32 index)
     if (index < 0)
         return;
 
-    ui->box_subsyntax->setVisible(false);
+    box_subsyntax->setVisible(false);
 
-    switch (ui->box_syntax->itemData(index).value<Types::Syntax>())
+    switch (box_syntax->itemData(index).value<Types::Syntax>())
     {
         case Types::Syntax::CXX:
             _syntax = new SyntaxCXX(ui_edit->document());
 
-            ui->box_subsyntax->addItem(tr("I18N_CXX_STD98"),
+            box_subsyntax->addItem(tr("I18N_CXX_STD98"),
                 QVariant::fromValue(Types::CXX::STD98));
-            ui->box_subsyntax->addItem(tr("I18N_CXX_STD11"),
+            box_subsyntax->addItem(tr("I18N_CXX_STD11"),
                 QVariant::fromValue(Types::CXX::STD11));
-            ui->box_subsyntax->addItem(tr("I18N_CXX_STD14"),
+            box_subsyntax->addItem(tr("I18N_CXX_STD14"),
                 QVariant::fromValue(Types::CXX::STD14));
-            ui->box_subsyntax->addItem(tr("I18N_CXX_STD17"),
+            box_subsyntax->addItem(tr("I18N_CXX_STD17"),
                 QVariant::fromValue(Types::CXX::STD17));
-            ui->box_subsyntax->addItem(tr("I18N_CXX_STD20"),
+            box_subsyntax->addItem(tr("I18N_CXX_STD20"),
                 QVariant::fromValue(Types::CXX::STD20));
-            ui->box_subsyntax->setVisible(true);
+            box_subsyntax->setVisible(true);
 
-            connect(ui->box_subsyntax,
+            connect(box_subsyntax,
                 static_cast<void (QComboBox::*)(qint32)>(&QComboBox::currentIndexChanged),
                 [this](const qint32 index)
             {
                 static_cast<SyntaxCXX *>(_syntax)->setStandard(
-                    ui->box_subsyntax->itemData(index).value<Types::CXX>());
+                    box_subsyntax->itemData(index).value<Types::CXX>());
                 _syntax->rehighlight();
             });
 
