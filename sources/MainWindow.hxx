@@ -3,24 +3,17 @@
 #include <QMainWindow>
 #include <QPalette>
 #include <QString>
+#include "ui_MainWindow.h"
 #include "Types.hxx"
 
-namespace Ui { class MainWindow; }
-class QCloseEvent;
-class QEvent;
 class QSettings;
 class QTranslator;
 class EditorWindow;
 class SearchWindow;
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow, protected Ui::MainWindow {
     Q_OBJECT
 public:
-    //--- public properties ---
-    const QPalette OldPalette;
-    Ui::MainWindow *ui;
-    SearchWindow *search;
-
     //--- public constructors ---
     MainWindow(QWidget *parent = nullptr);
     MainWindow(const MainWindow &rhs) = delete;
@@ -46,6 +39,8 @@ private:
     //--- private properties ---
     QTranslator *_trans;
     QSettings *_conf;
+    SearchWindow *_search;
+    QPalette _old_palette;
     Types::Language _lang;
     Types::Theme _theme;
     bool _darkmode;

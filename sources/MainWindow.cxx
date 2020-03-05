@@ -9,22 +9,19 @@
 #include <QTranslator>
 #include <QWidget>
 #include "MainWindow.hxx"
-#include "ui_MainWindow.h"
 #include "EditorWindow.hxx"
-#include "ui_EditorWindow.h"
 #include "SearchWindow.hxx"
-#include "ui_SearchWindow.h"
 
 //--- public constructors ---
 
 MainWindow::MainWindow(QWidget *parent)
-: QMainWindow(parent), OldPalette(qApp->palette()), ui(new Ui::MainWindow),
-  search(new SearchWindow), _trans(new QTranslator(this)),
+: QMainWindow(parent), Ui::MainWindow(), _trans(new QTranslator(this)),
   _conf(new QSettings(qApp->organizationName(), qApp->applicationName(), this)),
-  _lang(Types::Language::English), _theme(Types::Theme::Fusion), _darkmode(false)
+  _search(new SearchWindow), _old_palette(qApp->palette()), _lang(Types::Language::English),
+  _theme(Types::Theme::Fusion), _darkmode(false)
 {
-    ui->setupUi(this);
-    search->setWindowFlags(Qt::WindowStaysOnTopHint);
+    setupUi(this);
+    _search->setWindowFlags(Qt::WindowStaysOnTopHint);
     setupActions();
     setupToolbar();
 
@@ -45,20 +42,20 @@ MainWindow::MainWindow(QWidget *parent)
     setTheme(_theme);
     setDarkmode(_darkmode);
 
-    ui->me_theme_fusion->setVisible(false);
-    ui->me_theme_qtcurve->setVisible(false);
-    ui->me_theme_windows->setVisible(false);
+    me_theme_fusion->setVisible(false);
+    me_theme_qtcurve->setVisible(false);
+    me_theme_windows->setVisible(false);
 
     for (auto &stylename : QStyleFactory::keys())
     {
         if (stylename == "Fusion")
-            ui->me_theme_fusion->setVisible(true);
+            me_theme_fusion->setVisible(true);
 
         if (stylename == "QtCurve")
-            ui->me_theme_qtcurve->setVisible(true);
+            me_theme_qtcurve->setVisible(true);
 
         if (stylename == "Windows")
-            ui->me_theme_windows->setVisible(true);
+            me_theme_windows->setVisible(true);
     }
 }
 
@@ -74,10 +71,9 @@ MainWindow::~MainWindow()
         _conf->sync();
     }
 
+    delete _search;
     delete _conf;
     delete _trans;
-    delete search;
-    delete ui;
 }
 
 //--- protected methods and Qt slots ---
@@ -85,35 +81,33 @@ MainWindow::~MainWindow()
 void MainWindow::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::LanguageChange)
-        ui->retranslateUi(this);
+        retranslateUi(this);
 
     QMainWindow::changeEvent(event);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    search->close();
+    _search->close();
     QMainWindow::closeEvent(event);
 }
 
 void MainWindow::setupActions()
 {
     // file menu
-    connect(ui->mm_file, &QMenu::aboutToShow, [&]()
+    connect(mm_file, &QMenu::aboutToShow, [&]()
     {
         auto *editor = currentEditor();
 
-        //ui->me_file_new->setEnabled(true);
-        //ui->me_file_open->setEnabled(true);
-        ui->me_file_save->setEnabled((editor && editor->filenameIsSet() &&
+        //me_file_new->setEnabled(true);
+        //me_file_open->setEnabled(true);
+        me_file_save->setEnabled((editor && editor->filenameIsSet() &&
             editor->textHasChanged()) ? true : false);
-        ui->me_file_saveas->setEnabled(editor ? true : false);
-        //ui->me_file_exit->setEnabled(true);
+        me_file_saveas->setEnabled(editor ? true : false);
+        //me_file_exit->setEnabled(true);
     });
-
-    connect(ui->me_file_new, &QAction::triggered, [&](){ createEditor(); });
-
-    connect(ui->me_file_open, &QAction::triggered, [&]()
+    connect(me_file_new, &QAction::triggered, [&](){ createEditor(); });
+    connect(me_file_open, &QAction::triggered, [&]()
     {
         if (auto filenames = QFileDialog::getOpenFileNames(this, tr("I18N_FILEOPEN"), "./",
             tr("I18N_FILEOPEN_FILTER")); filenames.size())
@@ -122,16 +116,14 @@ void MainWindow::setupActions()
                 createEditor(filename);
         }
     });
-
-    connect(ui->me_file_save, &QAction::triggered, [&]()
+    connect(me_file_save, &QAction::triggered, [&]()
     {
         auto *editor = currentEditor();
 
         if (editor && editor->filenameIsSet())
             editor->saveFile(editor->filename());
     });
-
-    connect(ui->me_file_saveas, &QAction::triggered, [&]()
+    connect(me_file_saveas, &QAction::triggered, [&]()
     {
         auto *editor = currentEditor();
 
@@ -144,181 +136,136 @@ void MainWindow::setupActions()
             }
         }
     });
-
-    connect(ui->me_file_exit, &QAction::triggered, [&]()
-    {
-        close();
-    });
+    connect(me_file_exit, &QAction::triggered, this, &MainWindow::close);
 
     // edit menu
-    connect(ui->mm_edit, &QMenu::aboutToShow, [&]()
+    connect(mm_edit, &QMenu::aboutToShow, [&]()
     {
         auto *editor = currentEditor();
 
-        ui->me_edit_undo->setEnabled((editor && editor->undoIsReady()) ? true : false);
-        ui->me_edit_redo->setEnabled((editor && editor->redoIsReady()) ? true : false);
-        ui->me_edit_cut->setEnabled((editor &&
+        me_edit_undo->setEnabled((editor && editor->undoIsReady()) ? true : false);
+        me_edit_redo->setEnabled((editor && editor->redoIsReady()) ? true : false);
+        me_edit_cut->setEnabled((editor &&
             editor->textCursor().selectedText().size()) ? true : false);
-        ui->me_edit_copy->setEnabled((editor &&
+        me_edit_copy->setEnabled((editor &&
             editor->textCursor().selectedText().size()) ? true : false);
-        ui->me_edit_paste->setEnabled(editor ? true : false);
-        ui->me_edit_clear->setEnabled((editor &&
+        me_edit_paste->setEnabled(editor ? true : false);
+        me_edit_clear->setEnabled((editor &&
             editor->textCursor().selectedText().size()) ? true : false);
-        ui->me_edit_selectall->setEnabled(editor ? true : false);
+        me_edit_selectall->setEnabled(editor ? true : false);
     });
-
-    connect(ui->me_edit_undo, &QAction::triggered, [&]()
+    connect(me_edit_undo, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
             editor->doTextAction(Types::TextAction::Undo);
     });
-
-    connect(ui->me_edit_redo, &QAction::triggered, [&]()
+    connect(me_edit_redo, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
             editor->doTextAction(Types::TextAction::Redo);
     });
-
-    connect(ui->me_edit_cut, &QAction::triggered, [&]()
+    connect(me_edit_cut, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
             editor->doTextAction(Types::TextAction::Cut);
     });
-
-    connect(ui->me_edit_copy, &QAction::triggered, [&]()
+    connect(me_edit_copy, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
             editor->doTextAction(Types::TextAction::Copy);
     });
-
-    connect(ui->me_edit_paste, &QAction::triggered, [&]()
+    connect(me_edit_paste, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
             editor->doTextAction(Types::TextAction::Paste);
     });
-
-    connect(ui->me_edit_clear, &QAction::triggered, [&]()
+    connect(me_edit_clear, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
             editor->doTextAction(Types::TextAction::Delete);
     });
-
-    connect(ui->me_edit_selectall, &QAction::triggered, [&]()
+    connect(me_edit_selectall, &QAction::triggered, [&]()
     {
         if (auto *editor = currentEditor(); editor)
             editor->doTextAction(Types::TextAction::SelectAll);
     });
 
     // search menu
-    connect(ui->mm_search, &QMenu::aboutToShow, [&]()
+    connect(mm_search, &QMenu::aboutToShow, [&]()
     {
         auto *editor = currentEditor();
 
-        ui->me_search_find->setEnabled(editor ? true : false);
-        ui->me_search_next->setEnabled(editor ? true : false);
-        ui->me_search_prev->setEnabled(editor ? true : false);
+        me_search_find->setEnabled(editor ? true : false);
+        me_search_next->setEnabled(editor ? true : false);
+        me_search_prev->setEnabled(editor ? true : false);
     });
-
-    connect(ui->me_search_find, &QAction::triggered, [&]()
-    {
-        search->show();
-    });
+    connect(me_search_find, &QAction::triggered, [&](){ _search->show(); });
 
     // window menu
-    connect(ui->mm_window, &QMenu::aboutToShow, [&]()
+    connect(mm_window, &QMenu::aboutToShow, [&]()
     {
         auto *editor = currentEditor();
 
-        ui->me_window_next->setEnabled((editor &&
-            !ui->wid_mdi->subWindowList().isEmpty()) ? true : false);
-        ui->me_window_prev->setEnabled((editor &&
-            !ui->wid_mdi->subWindowList().isEmpty()) ? true : false);
-        ui->me_window_tile->setEnabled(editor ? true : false);
-        ui->me_window_cascade->setEnabled(editor ? true : false);
-        ui->me_window_minimize->setEnabled(editor ? true : false);
-        ui->me_window_maximize->setEnabled(editor ? true : false);
-        ui->me_window_close->setEnabled(editor ? true : false);
-        ui->me_window_closeall->setEnabled(editor ? true : false);
+        me_window_next->setEnabled((editor &&
+            !wid_mdi->subWindowList().isEmpty()) ? true : false);
+        me_window_prev->setEnabled((editor &&
+            !wid_mdi->subWindowList().isEmpty()) ? true : false);
+        me_window_tile->setEnabled(editor ? true : false);
+        me_window_cascade->setEnabled(editor ? true : false);
+        me_window_minimize->setEnabled(editor ? true : false);
+        me_window_maximize->setEnabled(editor ? true : false);
+        me_window_close->setEnabled(editor ? true : false);
+        me_window_closeall->setEnabled(editor ? true : false);
     });
-
-    connect(ui->me_window_next, &QAction::triggered, [&]()
+    connect(me_window_next, &QAction::triggered, [&](){ wid_mdi->activateNextSubWindow(); });
+    connect(me_window_prev, &QAction::triggered, [&](){ wid_mdi->activatePreviousSubWindow(); });
+    connect(me_window_tile, &QAction::triggered, [&](){ wid_mdi->tileSubWindows(); });
+    connect(me_window_cascade, &QAction::triggered, [&](){ wid_mdi->cascadeSubWindows(); });
+    connect(me_window_maximize, &QAction::triggered, [&]()
     {
-        ui->wid_mdi->activateNextSubWindow();
-    });
-
-    connect(ui->me_window_prev, &QAction::triggered, [&]()
-    {
-        ui->wid_mdi->activatePreviousSubWindow();
-    });
-
-    connect(ui->me_window_tile, &QAction::triggered, [&]()
-    {
-        ui->wid_mdi->tileSubWindows();
-    });
-
-    connect(ui->me_window_cascade, &QAction::triggered, [&]()
-    {
-        ui->wid_mdi->cascadeSubWindows();
-    });
-
-    connect(ui->me_window_maximize, &QAction::triggered, [&]()
-    {
-        if (auto list = ui->wid_mdi->subWindowList(); !list.isEmpty())
+        if (auto list = wid_mdi->subWindowList(); !list.isEmpty())
             for (auto *subwin : list)
                 subwin->showNormal();
     });
-
-    connect(ui->me_window_minimize, &QAction::triggered, [&]()
+    connect(me_window_minimize, &QAction::triggered, [&]()
     {
-        if (auto list = ui->wid_mdi->subWindowList(); !list.isEmpty())
+        if (auto list = wid_mdi->subWindowList(); !list.isEmpty())
             for (auto *subwin : list)
                 subwin->showShaded();
     });
-
-    connect(ui->me_window_close, &QAction::triggered, [&]()
-    {
-        ui->wid_mdi->closeActiveSubWindow();
-    });
-
-    connect(ui->me_window_closeall, &QAction::triggered, [&]()
-    {
-        ui->wid_mdi->closeAllSubWindows();
-    });
+    connect(me_window_close, &QAction::triggered, [&](){ wid_mdi->closeActiveSubWindow(); });
+    connect(me_window_closeall, &QAction::triggered, [&](){ wid_mdi->closeAllSubWindows(); });
 
     // config menu
-    connect(ui->me_lang_english, &QAction::triggered, [&](){ setLanguage(); });
-    connect(ui->me_lang_dutch, &QAction::triggered, [&](){ setLanguage(Types::Language::Dutch); });
-    connect(ui->me_lang_french, &QAction::triggered,
-        [&](){ setLanguage(Types::Language::French); });
-    connect(ui->me_lang_german, &QAction::triggered,
-        [&](){ setLanguage(Types::Language::German); });
-    connect(ui->me_lang_italian, &QAction::triggered,
-        [&](){ setLanguage(Types::Language::Italian); });
-    connect(ui->me_lang_spanish, &QAction::triggered,
-        [&](){ setLanguage(Types::Language::Spanish); });
+    connect(me_lang_english, &QAction::triggered, [&](){ setLanguage(); });
+    connect(me_lang_dutch, &QAction::triggered, [&](){ setLanguage(Types::Language::Dutch); });
+    connect(me_lang_french, &QAction::triggered, [&](){ setLanguage(Types::Language::French); });
+    connect(me_lang_german, &QAction::triggered, [&](){ setLanguage(Types::Language::German); });
+    connect(me_lang_italian, &QAction::triggered, [&](){ setLanguage(Types::Language::Italian); });
+    connect(me_lang_spanish, &QAction::triggered, [&](){ setLanguage(Types::Language::Spanish); });
 
-    connect(ui->me_theme_fusion, &QAction::triggered, [&](){ setTheme(); });
-    connect(ui->me_theme_qtcurve, &QAction::triggered, [&](){ setTheme(Types::Theme::QtCurve); });
-    connect(ui->me_theme_windows, &QAction::triggered, [&](){ setTheme(Types::Theme::Windows); });
-    connect(ui->me_theme_darkmode, &QAction::toggled, [&](const bool on){ setDarkmode(on); });
+    connect(me_theme_fusion, &QAction::triggered, [&](){ setTheme(); });
+    connect(me_theme_qtcurve, &QAction::triggered, [&](){ setTheme(Types::Theme::QtCurve); });
+    connect(me_theme_windows, &QAction::triggered, [&](){ setTheme(Types::Theme::Windows); });
+    connect(me_theme_darkmode, &QAction::toggled, [&](const bool on){ setDarkmode(on); });
 
     // about menu
-    connect(ui->me_about_qt, &QAction::triggered, qApp, &QApplication::aboutQt);
+    connect(me_about_qt, &QAction::triggered, qApp, &QApplication::aboutQt);
 
     // find dialog
-    connect(search, &SearchWindow::searchRequest, [&](const QString &str,
+    connect(_search, &SearchWindow::searchRequest, [&](const QString &str,
         const QTextDocument::FindFlags flags, const bool use_regexp)
     {
         if (auto *editor = currentEditor(); editor)
             editor->search(str, flags, use_regexp);
     });
-    connect(ui->wid_mdi, &QMdiArea::subWindowActivated, [&](QMdiSubWindow *window)
+    connect(wid_mdi, &QMdiArea::subWindowActivated, [&](QMdiSubWindow *window)
     {
         if (window)
-            search->setSearchString(qobject_cast<EditorWindow *>(
+            _search->setSearchString(qobject_cast<EditorWindow *>(
                 window->widget())->searchString());
         else
-            search->hide();
+            _search->hide();
     });
 }
 
@@ -362,38 +309,38 @@ void MainWindow::setLanguage(const Types::Language lang)
         if (!translator->isEmpty())
         {
             _lang = lang;
-            ui->me_lang_dutch->setEnabled(true);
-            ui->me_lang_english->setEnabled(true);
-            ui->me_lang_french->setEnabled(true);
-            ui->me_lang_german->setEnabled(true);
-            ui->me_lang_italian->setEnabled(true);
-            ui->me_lang_spanish->setEnabled(true);
+            me_lang_dutch->setEnabled(true);
+            me_lang_english->setEnabled(true);
+            me_lang_french->setEnabled(true);
+            me_lang_german->setEnabled(true);
+            me_lang_italian->setEnabled(true);
+            me_lang_spanish->setEnabled(true);
 
             switch (lang)
             {
                 case Types::Language::Dutch:
-                    ui->me_lang_dutch->setEnabled(false);
+                    me_lang_dutch->setEnabled(false);
                     break;
 
                 case Types::Language::French:
-                    ui->me_lang_french->setEnabled(false);
+                    me_lang_french->setEnabled(false);
                     break;
 
                 case Types::Language::German:
-                    ui->me_lang_german->setEnabled(false);
+                    me_lang_german->setEnabled(false);
                     break;
 
                 case Types::Language::Italian:
-                    ui->me_lang_italian->setEnabled(false);
+                    me_lang_italian->setEnabled(false);
                     break;
 
                 case Types::Language::Spanish:
-                    ui->me_lang_spanish->setEnabled(false);
+                    me_lang_spanish->setEnabled(false);
                     break;
 
                 case Types::Language::English:
                 default:
-                    ui->me_lang_english->setEnabled(false);
+                    me_lang_english->setEnabled(false);
             }
 
             qApp->removeTranslator(_trans);
@@ -408,27 +355,27 @@ void MainWindow::setLanguage(const Types::Language lang)
 
 void MainWindow::setTheme(const Types::Theme theme)
 {
-    ui->me_theme_fusion->setEnabled(true);
-    ui->me_theme_qtcurve->setEnabled(true);
-    ui->me_theme_windows->setEnabled(true);
+    me_theme_fusion->setEnabled(true);
+    me_theme_qtcurve->setEnabled(true);
+    me_theme_windows->setEnabled(true);
     _theme = theme;
 
     switch (theme)
     {
         case Types::Theme::QtCurve:
             qApp->setStyle(QStyleFactory::create("QtCurve"));
-            ui->me_theme_qtcurve->setEnabled(false);
+            me_theme_qtcurve->setEnabled(false);
             break;
 
         case Types::Theme::Windows:
             qApp->setStyle(QStyleFactory::create("Windows"));
-            ui->me_theme_windows->setEnabled(false);
+            me_theme_windows->setEnabled(false);
             break;
 
         case Types::Theme::Fusion:
         default:
             qApp->setStyle(QStyleFactory::create("Fusion"));
-            ui->me_theme_fusion->setEnabled(false);
+            me_theme_fusion->setEnabled(false);
     }
 }
 
@@ -462,32 +409,29 @@ void MainWindow::setDarkmode(const bool mode)
         qApp->setPalette(dark);
     }
     else
-        qApp->setPalette(OldPalette);
+        qApp->setPalette(_old_palette);
 
     _darkmode = mode;
-    ui->me_theme_darkmode->setChecked(mode);
+    me_theme_darkmode->setChecked(mode);
 }
 
 //--- private methods ---
 
 EditorWindow *MainWindow::createEditor(const QString &filename)
 {
-    QMdiSubWindow *subwin = ui->wid_mdi->addSubWindow(new EditorWindow);
+    QMdiSubWindow *subwin = wid_mdi->addSubWindow(new EditorWindow);
     EditorWindow *editor = qobject_cast<EditorWindow *>(subwin->widget());
-    QAction *action = ui->mm_window->addAction(editor->windowTitle(), subwin, [this, subwin]()
+    QAction *action = mm_window->addAction(editor->windowTitle(), subwin, [this, subwin]()
     {
-        ui->wid_mdi->setActiveSubWindow(subwin);
+        wid_mdi->setActiveSubWindow(subwin);
     });
 
     connect(editor, &EditorWindow::windowTitleChanged, action, &QAction::setText);
-    connect(editor, &EditorWindow::destroyed, [this, action]()
-    {
-        ui->mm_window->removeAction(action);
-    });
+    connect(editor, &EditorWindow::destroyed, [this, action](){ mm_window->removeAction(action); });
 
     if (filename.size() && !editor->openFile(filename))
     {
-        ui->wid_mdi->removeSubWindow(subwin);
+        wid_mdi->removeSubWindow(subwin);
         return nullptr;
     }
     subwin->setGeometry(subwin->x(), subwin->y(), width() / 2, height() * 2 / 3);
@@ -498,7 +442,7 @@ EditorWindow *MainWindow::createEditor(const QString &filename)
 
 EditorWindow *MainWindow::currentEditor()
 {
-    if (QMdiSubWindow *subwin = ui->wid_mdi->activeSubWindow(); subwin)
+    if (QMdiSubWindow *subwin = wid_mdi->activeSubWindow(); subwin)
         return qobject_cast<EditorWindow *>(subwin->widget());
     return nullptr;
 }
