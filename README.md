@@ -26,7 +26,7 @@ I also use some additional free components:
 The requirements are quite simple:
 - Linux (can be easily changed to support MacOS/Windows)
 - Qt 5.10+ (Core, Gui, Widgets)
-- a C++17 capable compiler (gcc 9)
+- a C++20 capable compiler (gcc 10)
 - cmake 3.0
 
 How to build:
