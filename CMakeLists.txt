@@ -2,9 +2,7 @@ CMAKE_MINIMUM_REQUIRED  (VERSION 3.0)
 PROJECT                 (CoEd LANGUAGES CXX)
 
 # packages
-FIND_PACKAGE            (Qt5Core REQUIRED)
-FIND_PACKAGE            (Qt5Widgets REQUIRED)
-FIND_PACKAGE            (Qt5LinguistTools REQUIRED)
+FIND_PACKAGE            (Qt5 COMPONENTS Core Widgets LinguistTools REQUIRED)
 
 # includes and paths/directories
 SET                     (CMAKE_INCLUDE_CURRENT_DIR on)
