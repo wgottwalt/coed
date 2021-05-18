@@ -162,8 +162,7 @@ void EditorArea::resizeEvent(QResizeEvent *event)
 
     QPlainTextEdit::resizeEvent(event);
     rect = contentsRect();
-    ui_lna->setGeometry({.left = rect.left(), .top = rect.top(), .right = lineNumberAreaWidth(),
-        .height = rect.height()});
+    ui_lna->setGeometry({rect.left(), rect.top(), lineNumberAreaWidth(), rect.height()});
 }
 
 void EditorArea::keyPressEvent(QKeyEvent *event)
@@ -202,8 +201,8 @@ void EditorArea::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
     if (_show_linenumbers)
     {
-        const QRect rect = {.left = event->rect().left(), .top = event->rect().top(),
-                            .right = event->rect().right(), .height = event->rect().height()};
+        const QRect rect = {event->rect().left(), event->rect().top(), event->rect().right(),
+                            event->rect().height()};
         QPainter painter(ui_lna);
         QTextBlock block = firstVisibleBlock();
         qint32 bnum = block.blockNumber();
