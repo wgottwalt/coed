@@ -14,7 +14,7 @@
 
 //--- public constructors ---
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget *parent) noexcept(false)
 : QMainWindow(parent), Ui::MainWindow(), _trans(new QTranslator(this)),
   _conf(new QSettings(qApp->organizationName(), qApp->applicationName(), this)),
   _search(new SearchWindow), _old_palette(qApp->palette()), _lang(Types::Language::English),
@@ -59,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
 }
 
-MainWindow::~MainWindow()
+MainWindow::~MainWindow() noexcept
 {
     if (_conf)
     {
@@ -78,7 +78,7 @@ MainWindow::~MainWindow()
 
 //--- protected methods and Qt slots ---
 
-void MainWindow::changeEvent(QEvent *event)
+void MainWindow::changeEvent(QEvent *event) noexcept(false)
 {
     if (event->type() == QEvent::LanguageChange)
         retranslateUi(this);
@@ -86,13 +86,13 @@ void MainWindow::changeEvent(QEvent *event)
     QMainWindow::changeEvent(event);
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+void MainWindow::closeEvent(QCloseEvent *event) noexcept(false)
 {
     _search->close();
     QMainWindow::closeEvent(event);
 }
 
-void MainWindow::setupActions()
+void MainWindow::setupActions() noexcept(false)
 {
     // file menu
     connect(mm_file, &QMenu::aboutToShow, [&]()
@@ -269,11 +269,11 @@ void MainWindow::setupActions()
     });
 }
 
-void MainWindow::setupToolbar()
+void MainWindow::setupToolbar() noexcept
 {
 }
 
-void MainWindow::setLanguage(const Types::Language lang)
+void MainWindow::setLanguage(const Types::Language lang) noexcept(false)
 {
     QTranslator *translator = new QTranslator(this);
 
@@ -353,7 +353,7 @@ void MainWindow::setLanguage(const Types::Language lang)
     }
 }
 
-void MainWindow::setTheme(const Types::Theme theme)
+void MainWindow::setTheme(const Types::Theme theme) noexcept(false)
 {
     me_theme_fusion->setEnabled(true);
     me_theme_qtcurve->setEnabled(true);
@@ -379,7 +379,7 @@ void MainWindow::setTheme(const Types::Theme theme)
     }
 }
 
-void MainWindow::setDarkmode(const bool mode)
+void MainWindow::setDarkmode(const bool mode) noexcept(false)
 {
     if (mode)
     {
@@ -417,7 +417,7 @@ void MainWindow::setDarkmode(const bool mode)
 
 //--- private methods ---
 
-EditorWindow *MainWindow::createEditor(const QString &filename)
+EditorWindow *MainWindow::createEditor(const QString &filename) noexcept(false)
 {
     QMdiSubWindow *subwin = wid_mdi->addSubWindow(new EditorWindow);
     EditorWindow *editor = qobject_cast<EditorWindow *>(subwin->widget());
@@ -440,7 +440,7 @@ EditorWindow *MainWindow::createEditor(const QString &filename)
     return editor;
 }
 
-EditorWindow *MainWindow::currentEditor()
+EditorWindow *MainWindow::currentEditor() noexcept(false)
 {
     if (QMdiSubWindow *subwin = wid_mdi->activeSubWindow(); subwin)
         return qobject_cast<EditorWindow *>(subwin->widget());

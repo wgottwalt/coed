@@ -2,7 +2,7 @@
 #include <QFontDatabase>
 #include "MainWindow.hxx"
 
-qint32 main(qint32 argc, char **argv)
+qint32 main(qint32 argc, char **argv) noexcept(false)
 {
     QApplication app(argc, argv);
     MainWindow win;

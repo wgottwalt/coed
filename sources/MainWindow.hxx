@@ -15,25 +15,25 @@ class MainWindow : public QMainWindow, protected Ui::MainWindow {
     Q_OBJECT
 public:
     //--- public constructors ---
-    MainWindow(QWidget *parent = nullptr);
-    MainWindow(const MainWindow &rhs) = delete;
-    MainWindow(MainWindow &&rhs) = delete;
-    virtual ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr) noexcept(false);
+    MainWindow(const MainWindow &rhs) noexcept(false) = delete;
+    MainWindow(MainWindow &&rhs) noexcept = delete;
+    virtual ~MainWindow() noexcept;
 
     //--- public operators ---
-    MainWindow &operator=(const MainWindow &rhs) = delete;
-    MainWindow &operator=(MainWindow &&rhs) = delete;
+    MainWindow &operator=(const MainWindow &rhs) noexcept(false) = delete;
+    MainWindow &operator=(MainWindow &&rhs) noexcept = delete;
 
 protected:
     //--- protected methods ---
-    virtual void changeEvent(QEvent *event) override final;
-    virtual void closeEvent(QCloseEvent *event) override final;
+    virtual void changeEvent(QEvent *event) noexcept(false) override final;
+    virtual void closeEvent(QCloseEvent *event) noexcept(false) override final;
 
-    void setupActions();
-    void setupToolbar();
-    void setLanguage(const Types::Language lang = Types::Language::English);
-    void setTheme(const Types::Theme theme = Types::Theme::Fusion);
-    void setDarkmode(const bool mode);
+    void setupActions() noexcept(false);
+    void setupToolbar() noexcept;
+    void setLanguage(const Types::Language lang = Types::Language::English) noexcept(false);
+    void setTheme(const Types::Theme theme = Types::Theme::Fusion) noexcept(false);
+    void setDarkmode(const bool mode) noexcept(false);
 
 private:
     //--- private properties ---
@@ -46,6 +46,6 @@ private:
     bool _darkmode;
 
     //--- private methods ---
-    EditorWindow *createEditor(const QString &filename = "");
-    EditorWindow *currentEditor();
+    EditorWindow *createEditor(const QString &filename = "") noexcept(false);
+    EditorWindow *currentEditor() noexcept(false);
 };
