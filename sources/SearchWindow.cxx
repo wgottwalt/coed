@@ -2,7 +2,7 @@
 
 //--- public constructors ---
 
-SearchWindow::SearchWindow(QWidget *parent)
+SearchWindow::SearchWindow(QWidget *parent) noexcept(false)
 : QWidget(parent), Ui::SearchWindow()
 {
     setupUi(this);
@@ -11,13 +11,16 @@ SearchWindow::SearchWindow(QWidget *parent)
     setupActions();
 }
 
-SearchWindow::~SearchWindow()
+//--- public methods ---
+
+void SearchWindow::setSearchString(const QString &str) noexcept
 {
+    wid_lineedit->setText(str);
 }
 
 //--- protected methods ---
 
-void SearchWindow::changeEvent(QEvent *event)
+void SearchWindow::changeEvent(QEvent *event) noexcept(false)
 {
     if (event->type() == QEvent::LanguageChange)
         retranslateUi(this);
@@ -25,7 +28,7 @@ void SearchWindow::changeEvent(QEvent *event)
     QWidget::changeEvent(event);
 }
 
-void SearchWindow::setupActions()
+void SearchWindow::setupActions() noexcept(false)
 {
     connect(btn_close, &QPushButton::clicked, this, &SearchWindow::close);
     connect(btn_prev, &QPushButton::clicked, [&]()
@@ -51,11 +54,4 @@ void SearchWindow::setupActions()
 
         emit searchRequest(wid_lineedit->text(), flags, false);
     });
-}
-
-//--- public methods ---
-
-void SearchWindow::setSearchString(const QString &str)
-{
-    wid_lineedit->setText(str);
 }
