@@ -13,26 +13,22 @@ static quint32 __counter = 0;
 //--- LineNumberArea ---------------------------------------------------------//
 //--- public constructor ---
 
-LineNumberArea::LineNumberArea(EditorArea *editor)
-: QWidget(editor), _editor(editor)
+LineNumberArea::LineNumberArea(EditorArea *editor) noexcept(false)
+: QWidget{editor}, _editor{editor}
 {
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-LineNumberArea::~LineNumberArea()
-{
-}
-
 //--- public methods ---
 
-QSize LineNumberArea::sizeHint() const
+QSize LineNumberArea::sizeHint() const noexcept
 {
     return { _editor->lineNumberAreaWidth(), 0 };
 }
 
 //--- protected methods ---
 
-void LineNumberArea::paintEvent(QPaintEvent *event)
+void LineNumberArea::paintEvent(QPaintEvent *event) noexcept(false)
 {
     _editor->lineNumberAreaPaintEvent(event);
 }
@@ -40,11 +36,11 @@ void LineNumberArea::paintEvent(QPaintEvent *event)
 //--- EditorArea -------------------------------------------------------------//
 //--- public constructors ---
 
-EditorArea::EditorArea(QWidget *parent)
-: QPlainTextEdit(parent), ui_lna(new LineNumberArea(this)), _font(QFont("Fira Code", 12)),
-  _fontw(QFontMetrics(_font).horizontalAdvance(QLatin1Char('X'))),
-  _fonth(QFontMetrics(_font).height()), _tabwidth(8), _use_smartfont(true), _use_wordwrap(true),
-  _show_linenumbers(true), _show_linehighlight(true), _tabs_to_spaces(false)
+EditorArea::EditorArea(QWidget *parent) noexcept(false)
+: QPlainTextEdit{parent}, ui_lna{new LineNumberArea{this}}, _font{QFont{"Fira Code", 12}},
+  _fontw{QFontMetrics{_font}.horizontalAdvance(QLatin1Char{'X'})},
+  _fonth{QFontMetrics{_font}.height()}, _tabwidth{8}, _use_smartfont{true}, _use_wordwrap{true},
+  _show_linenumbers{true}, _show_linehighlight{true}, _tabs_to_spaces{false}
 {
     setAttribute(Qt::WA_DeleteOnClose);
     document()->setDefaultFont(_font);
@@ -57,21 +53,21 @@ EditorArea::EditorArea(QWidget *parent)
     updateLineHighlight();
 }
 
-EditorArea::~EditorArea()
+EditorArea::~EditorArea() noexcept
 {
     delete ui_lna;
 }
 
 //--- public methods ---
 
-void EditorArea::setSmartFont(const bool on)
+void EditorArea::setSmartFont(const bool on) noexcept(false)
 {
     if (_use_smartfont = on; on)
-        _font = QFont("Fira Code", 12);
+        _font = {"Fira Code", 12};
     else
-        _font = QFont("Fira Mono", 12);
-    _fontw = QFontMetrics(_font).horizontalAdvance(QLatin1Char('X'));
-    _fonth = QFontMetrics(_font).height();
+        _font = {"Fira Mono", 12};
+    _fontw = QFontMetrics{_font}.horizontalAdvance(QLatin1Char('X'));
+    _fonth = QFontMetrics{_font}.height();
     document()->setDefaultFont(_font);
     setTabStopDistance(_fontw * _tabwidth);
     setFocus();
@@ -80,12 +76,12 @@ void EditorArea::setSmartFont(const bool on)
     updateLineHighlight();
 }
 
-bool EditorArea::smartFont() const
+bool EditorArea::smartFont() const noexcept
 {
     return _use_smartfont;
 }
 
-void EditorArea::setWordWrap(const bool on)
+void EditorArea::setWordWrap(const bool on) noexcept
 {
     if (_use_wordwrap = on; on)
         setLineWrapMode(QPlainTextEdit::WidgetWidth);
@@ -94,61 +90,61 @@ void EditorArea::setWordWrap(const bool on)
     setFocus();
 }
 
-bool EditorArea::wordWrap() const
+bool EditorArea::wordWrap() const noexcept
 {
     return _use_wordwrap;
 }
 
-void EditorArea::setShowLineNumbers(const bool on)
+void EditorArea::setShowLineNumbers(const bool on) noexcept
 {
     _show_linenumbers = on;
     updateLineNumberAreaWidth();
     setFocus();
 }
 
-bool EditorArea::showLineNumbers() const
+bool EditorArea::showLineNumbers() const noexcept
 {
     return _show_linenumbers;
 }
 
-void EditorArea::setShowLineHighlight(const bool on)
+void EditorArea::setShowLineHighlight(const bool on) noexcept
 {
     _show_linehighlight = on;
     updateLineHighlight();
     setFocus();
 }
 
-bool EditorArea::showLineHighlight() const
+bool EditorArea::showLineHighlight() const noexcept
 {
     return _show_linehighlight;
 }
 
-void EditorArea::setTabsToSpaces(const bool on)
+void EditorArea::setTabsToSpaces(const bool on) noexcept
 {
     _tabs_to_spaces = on;
     setFocus();
 }
 
-bool EditorArea::tabsToSpaces() const
+bool EditorArea::tabsToSpaces() const noexcept
 {
     return _tabs_to_spaces;
 }
 
-void EditorArea::setTabWidth(const qint32 value)
+void EditorArea::setTabWidth(const qint32 value) noexcept
 {
     _tabwidth = value;
     setTabStopDistance(_fontw * _tabwidth);
     setFocus();
 }
 
-qint32 EditorArea::tabWidth() const
+qint32 EditorArea::tabWidth() const noexcept
 {
     return _tabwidth;
 }
 
 //--- protected methods ---
 
-void EditorArea::changeEvent(QEvent *event)
+void EditorArea::changeEvent(QEvent *event) noexcept(false)
 {
     if (event->type() == QEvent::PaletteChange)
         updateLineHighlight();
@@ -156,7 +152,7 @@ void EditorArea::changeEvent(QEvent *event)
     QPlainTextEdit::changeEvent(event);
 }
 
-void EditorArea::resizeEvent(QResizeEvent *event)
+void EditorArea::resizeEvent(QResizeEvent *event) noexcept(false)
 {
     QRect rect;
 
@@ -165,7 +161,7 @@ void EditorArea::resizeEvent(QResizeEvent *event)
     ui_lna->setGeometry({rect.left(), rect.top(), lineNumberAreaWidth(), rect.height()});
 }
 
-void EditorArea::keyPressEvent(QKeyEvent *event)
+void EditorArea::keyPressEvent(QKeyEvent *event) noexcept(false)
 {
     if (event->key() == Qt::Key_Tab)
     {
@@ -178,7 +174,7 @@ void EditorArea::keyPressEvent(QKeyEvent *event)
     QPlainTextEdit::keyPressEvent(event);
 }
 
-qint32 EditorArea::lineNumberAreaWidth() const
+qint32 EditorArea::lineNumberAreaWidth() const noexcept
 {
     if (_show_linenumbers)
     {
@@ -197,7 +193,7 @@ qint32 EditorArea::lineNumberAreaWidth() const
     return 0;
 }
 
-void EditorArea::lineNumberAreaPaintEvent(QPaintEvent *event)
+void EditorArea::lineNumberAreaPaintEvent(QPaintEvent *event) noexcept(false)
 {
     if (_show_linenumbers)
     {
@@ -229,12 +225,12 @@ void EditorArea::lineNumberAreaPaintEvent(QPaintEvent *event)
     }
 }
 
-void EditorArea::updateLineNumberAreaWidth(const qint32 /* new_block_count */)
+void EditorArea::updateLineNumberAreaWidth([[maybe_unused]] const qint32 new_block_count) noexcept
 {
     setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
-void EditorArea::updateLineNumberArea(const QRect &rect, const qint32 delta_y)
+void EditorArea::updateLineNumberArea(const QRect &rect, const qint32 delta_y) noexcept(false)
 {
     if (delta_y)
         ui_lna->scroll(0, delta_y);
@@ -245,7 +241,7 @@ void EditorArea::updateLineNumberArea(const QRect &rect, const qint32 delta_y)
         updateLineNumberAreaWidth();
 }
 
-void EditorArea::updateLineHighlight()
+void EditorArea::updateLineHighlight() noexcept(false)
 {
     if (_show_linehighlight)
     {

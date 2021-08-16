@@ -21,21 +21,21 @@ class LineNumberArea : public QWidget {
     Q_OBJECT
 public:
     //--- public constructor ---
-    LineNumberArea(EditorArea *editor = nullptr);
-    LineNumberArea(const LineNumberArea &rhs) = delete;
-    LineNumberArea(LineNumberArea &&rhs) = delete;
-    virtual ~LineNumberArea();
+    explicit LineNumberArea(EditorArea *editor = nullptr) noexcept(false);
+    LineNumberArea(const LineNumberArea &rhs) noexcept(false) = delete;
+    LineNumberArea(LineNumberArea &&rhs) noexcept = delete;
+    virtual ~LineNumberArea() noexcept override final = default;
 
     //--- public operators ---
-    LineNumberArea &operator=(const LineNumberArea &rhs) = delete;
-    LineNumberArea &operator=(LineNumberArea &&rhs) = delete;
+    LineNumberArea &operator=(const LineNumberArea &rhs) noexcept(false) = delete;
+    LineNumberArea &operator=(LineNumberArea &&rhs) noexcept = delete;
 
     //--- public methods ---
-    virtual QSize sizeHint() const override final;
+    virtual QSize sizeHint() const noexcept override final;
 
 protected:
     //--- protected methods ---
-    virtual void paintEvent(QPaintEvent *event) override final;
+    virtual void paintEvent(QPaintEvent *event) noexcept(false) override final;
 
 private:
     //--- private properties ---
@@ -49,40 +49,40 @@ class EditorArea : public QPlainTextEdit {
     friend class LineNumberArea;
 public:
     //--- public constructors ---
-    EditorArea(QWidget *parent = nullptr);
-    EditorArea(const EditorArea &rhs) = delete;
-    EditorArea(EditorArea &&rhs) = delete;
-    virtual ~EditorArea();
+    explicit EditorArea(QWidget *parent = nullptr) noexcept(false);
+    EditorArea(const EditorArea &rhs) noexcept(false) = delete;
+    EditorArea(EditorArea &&rhs) noexcept = delete;
+    virtual ~EditorArea() noexcept override final;
 
     //--- public operators ---
-    EditorArea &operator=(const EditorArea &rhs) = delete;
-    EditorArea &operator=(EditorArea &&rhs) = delete;
+    EditorArea &operator=(const EditorArea &rhs) noexcept(false) = delete;
+    EditorArea &operator=(EditorArea &&rhs) noexcept = delete;
 
     //--- public methods ---
-    void setSmartFont(const bool on = true);
-    bool smartFont() const;
-    void setWordWrap(const bool on = true);
-    bool wordWrap() const;
-    void setShowLineNumbers(const bool on = true);
-    bool showLineNumbers() const;
-    void setShowLineHighlight(const bool on = true);
-    bool showLineHighlight() const;
-    void setTabsToSpaces(const bool on = false);
-    bool tabsToSpaces() const;
-    void setTabWidth(const qint32 value = 8);
-    qint32 tabWidth() const;
+    void setSmartFont(const bool on = true) noexcept(false);
+    bool smartFont() const noexcept;
+    void setWordWrap(const bool on = true) noexcept;
+    bool wordWrap() const noexcept;
+    void setShowLineNumbers(const bool on = true) noexcept;
+    bool showLineNumbers() const noexcept;
+    void setShowLineHighlight(const bool on = true) noexcept;
+    bool showLineHighlight() const noexcept;
+    void setTabsToSpaces(const bool on = false) noexcept;
+    bool tabsToSpaces() const noexcept;
+    void setTabWidth(const qint32 value = 8) noexcept;
+    qint32 tabWidth() const noexcept;
 
 protected:
     //--- protected methods ---
-    virtual void changeEvent(QEvent *event) override final;
-    virtual void resizeEvent(QResizeEvent *event) override final;
-    virtual void keyPressEvent(QKeyEvent *event) override final;
+    virtual void changeEvent(QEvent *event) noexcept(false) override final;
+    virtual void resizeEvent(QResizeEvent *event) noexcept(false) override final;
+    virtual void keyPressEvent(QKeyEvent *event) noexcept(false) override final;
 
-    qint32 lineNumberAreaWidth() const;
-    void lineNumberAreaPaintEvent(QPaintEvent *event);
-    void updateLineNumberAreaWidth(const qint32 new_block_count = 0);
-    void updateLineNumberArea(const QRect &rect, const qint32 delta_y);
-    void updateLineHighlight();
+    qint32 lineNumberAreaWidth() const noexcept;
+    void lineNumberAreaPaintEvent(QPaintEvent *event) noexcept(false);
+    void updateLineNumberAreaWidth(const qint32 new_block_count = 0) noexcept;
+    void updateLineNumberArea(const QRect &rect, const qint32 delta_y) noexcept(false);
+    void updateLineHighlight() noexcept(false);
 
 private:
     //--- private properties ---
