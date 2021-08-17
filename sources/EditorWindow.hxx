@@ -104,35 +104,36 @@ class EditorWindow : public QWidget, protected Ui::EditorWindow {
     Q_OBJECT
 public:
     //--- public constructors ---
-    EditorWindow(QWidget *parent = nullptr);
-    EditorWindow(const EditorWindow &rhs) = delete;
-    EditorWindow(EditorWindow &&rhs) = delete;
-    virtual ~EditorWindow();
+    explicit EditorWindow(QWidget *parent = nullptr) noexcept(false);
+    EditorWindow(const EditorWindow &rhs) noexcept(false) = delete;
+    EditorWindow(EditorWindow &&rhs) noexcept = delete;
+    virtual ~EditorWindow() noexcept;
 
     //--- public operators ---
-    EditorWindow &operator=(const EditorWindow &rhs) = delete;
-    EditorWindow &operator=(EditorWindow &&rhs) = delete;
+    EditorWindow &operator=(const EditorWindow &rhs) noexcept(false) = delete;
+    EditorWindow &operator=(EditorWindow &&rhs) noexcept = delete;
 
     //--- public methods ---
-    bool openFile(const QString &filename);
-    bool saveFile(const QString &filename = "");
-    void search(const QString &str, const QTextDocument::FindFlags flags, const bool use_regexp);
-    QString searchString() const;
-    QString filename() const;
-    bool undoIsReady() const;
-    bool redoIsReady() const;
-    bool textHasChanged() const;
-    bool filenameIsSet() const;
-    QTextCursor textCursor();
-    void doTextAction(const Types::TextAction action);
+    bool openFile(const QString &filename) noexcept(false);
+    bool saveFile(const QString &filename = "") noexcept(false);
+    void search(const QString &str, const QTextDocument::FindFlags flags, const bool use_regexp)
+        noexcept(false);
+    QString searchString() const noexcept;
+    QString filename() const noexcept;
+    bool undoIsReady() const noexcept;
+    bool redoIsReady() const noexcept;
+    bool textHasChanged() const noexcept;
+    bool filenameIsSet() const noexcept;
+    QTextCursor textCursor() noexcept;
+    void doTextAction(const Types::TextAction action) noexcept;
 
 protected:
     //--- protected methods ---
-    virtual void changeEvent(QEvent *event) override final;
-    void setupActions();
-    void updateWindowTitle();
-    void updatePanelLines();
-    void updatePanelPosition();
+    virtual void changeEvent(QEvent *event) noexcept(false) override final;
+    void setupActions() noexcept(false);
+    void updateWindowTitle() noexcept(false);
+    void updatePanelLines() noexcept(false);
+    void updatePanelPosition() noexcept(false);
 
 private:
     //--- private properties ---
@@ -147,6 +148,6 @@ private:
     bool _filename_set;
 
     //--- private methods ---
-    Types::Syntax detectFileType(const QFile &file) const;
-    void switchSyntax(const qint32 index);
+    Types::Syntax detectFileType(const QFile &file) const noexcept(false);
+    void switchSyntax(const qint32 index) noexcept(false);
 };

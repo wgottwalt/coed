@@ -263,10 +263,10 @@ void EditorArea::updateLineHighlight() noexcept(false)
 //--- EditorWindow -----------------------------------------------------------//
 //--- public constructors ---
 
-EditorWindow::EditorWindow(QWidget *parent)
-: QWidget(parent), Ui::EditorWindow(), _filename(""), _search_string(""),
-  _ui_edit(new EditorArea(this)), _syntax(nullptr), _id(__counter++), _undo_ready(false),
-  _redo_ready(false), _text_changed(false), _filename_set(false)
+EditorWindow::EditorWindow(QWidget *parent) noexcept(false)
+: QWidget{parent}, Ui::EditorWindow{}, _filename{}, _search_string{}, _ui_edit{new EditorArea{this}},
+  _syntax{nullptr}, _id{__counter++}, _undo_ready{false}, _redo_ready{false}, _text_changed{false},
+  _filename_set{false}
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -289,7 +289,7 @@ EditorWindow::EditorWindow(QWidget *parent)
     updatePanelPosition();
 }
 
-EditorWindow::~EditorWindow()
+EditorWindow::~EditorWindow() noexcept
 {
     if (_syntax)
         delete _syntax;
@@ -298,9 +298,9 @@ EditorWindow::~EditorWindow()
 
 //--- public methods/slots ---
 
-bool EditorWindow::openFile(const QString &filename)
+bool EditorWindow::openFile(const QString &filename) noexcept(false)
 {
-    if (QFile ifile(filename); ifile.exists() && ifile.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (QFile ifile{filename}; ifile.exists() && ifile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         _ui_edit->setPlainText(ifile.readAll());
         ifile.close();
@@ -322,9 +322,9 @@ bool EditorWindow::openFile(const QString &filename)
     return false;
 }
 
-bool EditorWindow::saveFile(const QString &filename)
+bool EditorWindow::saveFile(const QString &filename) noexcept(false)
 {
-    if (QFile ofile(filename); ofile.open(QIODevice::WriteOnly))
+    if (QFile ofile{filename}; ofile.open(QIODevice::WriteOnly))
     {
         ofile.write(_ui_edit->toPlainText().toUtf8());
         ofile.close();
@@ -342,7 +342,7 @@ bool EditorWindow::saveFile(const QString &filename)
 }
 
 void EditorWindow::search(const QString &str, const QTextDocument::FindFlags flags,
-    const bool use_regexp)
+    const bool use_regexp) noexcept(false)
 {
     _search_string = str;
     if (use_regexp)
@@ -351,42 +351,42 @@ void EditorWindow::search(const QString &str, const QTextDocument::FindFlags fla
         _ui_edit->find(str, flags);
 }
 
-QString EditorWindow::searchString() const
+QString EditorWindow::searchString() const noexcept
 {
     return _search_string;
 }
 
-QString EditorWindow::filename() const
+QString EditorWindow::filename() const noexcept
 {
     return _filename_set ? _filename : "";
 }
 
-bool EditorWindow::undoIsReady() const
+bool EditorWindow::undoIsReady() const noexcept
 {
     return _undo_ready;
 }
 
-bool EditorWindow::redoIsReady() const
+bool EditorWindow::redoIsReady() const noexcept
 {
     return _redo_ready;
 }
 
-bool EditorWindow::textHasChanged() const
+bool EditorWindow::textHasChanged() const noexcept
 {
     return _text_changed;
 }
 
-bool EditorWindow::filenameIsSet() const
+bool EditorWindow::filenameIsSet() const noexcept
 {
     return _filename_set;
 }
 
-QTextCursor EditorWindow::textCursor()
+QTextCursor EditorWindow::textCursor() noexcept
 {
     return _ui_edit->textCursor();
 }
 
-void EditorWindow::doTextAction(const Types::TextAction action)
+void EditorWindow::doTextAction(const Types::TextAction action) noexcept
 {
     switch (action)
     {
@@ -422,7 +422,7 @@ void EditorWindow::doTextAction(const Types::TextAction action)
 
 //--- protected methods ---
 
-void EditorWindow::changeEvent(QEvent *event)
+void EditorWindow::changeEvent(QEvent *event) noexcept(false)
 {
     if (event->type() == QEvent::LanguageChange)
         retranslateUi(this);
@@ -430,7 +430,7 @@ void EditorWindow::changeEvent(QEvent *event)
     QWidget::changeEvent(event);
 }
 
-void EditorWindow::setupActions()
+void EditorWindow::setupActions() noexcept(false)
 {
     connect(_ui_edit, &QPlainTextEdit::undoAvailable, [&](const bool a){ _undo_ready = a; });
     connect(_ui_edit, &QPlainTextEdit::redoAvailable, [&](const bool a){ _redo_ready = a; });
@@ -454,18 +454,18 @@ void EditorWindow::setupActions()
         this, &EditorWindow::switchSyntax);
 }
 
-void EditorWindow::updateWindowTitle()
+void EditorWindow::updateWindowTitle() noexcept(false)
 {
     setWindowTitle("(" + QString::number(_id) + ") " +
         (_filename.size() ? _filename : tr("I18N_UNKNOWN_FILE")) + (_text_changed ? "*" : ""));
 }
 
-void EditorWindow::updatePanelLines()
+void EditorWindow::updatePanelLines() noexcept(false)
 {
     lab_lines->setText(QString::number(_ui_edit->document()->lineCount()));
 }
 
-void EditorWindow::updatePanelPosition()
+void EditorWindow::updatePanelPosition() noexcept(false)
 {
     const quint32 xpos = _ui_edit->textCursor().positionInBlock();
     const quint32 ypos = _ui_edit->textCursor().blockNumber();
@@ -475,9 +475,9 @@ void EditorWindow::updatePanelPosition()
 
 //--- private methods ---
 
-Types::Syntax EditorWindow::detectFileType(const QFile &file) const
+Types::Syntax EditorWindow::detectFileType(const QFile &file) const noexcept(false)
 {
-    const QFileInfo info(file);
+    const QFileInfo info{file};
 
     if ((info.suffix() == "cc") || (info.suffix() == "cpp") || (info.suffix() == "cxx") ||
         (info.suffix() == "h") || (info.suffix() == "hpp") || (info.suffix() == "hxx"))
@@ -486,7 +486,7 @@ Types::Syntax EditorWindow::detectFileType(const QFile &file) const
     return Types::Syntax::None;
 }
 
-void EditorWindow::switchSyntax(const qint32 index)
+void EditorWindow::switchSyntax(const qint32 index) noexcept(false)
 {
     if (index < 0)
         return;
@@ -496,7 +496,7 @@ void EditorWindow::switchSyntax(const qint32 index)
     switch (box_syntax->itemData(index).value<Types::Syntax>())
     {
         case Types::Syntax::CXX:
-            _syntax = new SyntaxCXX(_ui_edit->document());
+            _syntax = new SyntaxCXX{_ui_edit->document()};
 
             box_subsyntax->addItem(tr("I18N_CXX_STD98"),
                 QVariant::fromValue(Types::CXX::STD98));
@@ -513,11 +513,12 @@ void EditorWindow::switchSyntax(const qint32 index)
             connect(box_subsyntax,
                 static_cast<void (QComboBox::*)(qint32)>(&QComboBox::currentIndexChanged),
                 [this](const qint32 index)
-            {
-                static_cast<SyntaxCXX *>(_syntax)->setStandard(
-                    box_subsyntax->itemData(index).value<Types::CXX>());
-                _syntax->rehighlight();
-            });
+                {
+                    static_cast<SyntaxCXX *>(_syntax)->setStandard(
+                        box_subsyntax->itemData(index).value<Types::CXX>());
+                    _syntax->rehighlight();
+                }
+            );
 
             break;
 
