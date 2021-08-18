@@ -1,6 +1,6 @@
 #include "Types.hxx"
 
-const QString cxxToString(const Types::CXX cxx)
+const QString cxxToString(const Types::CXX cxx) noexcept
 {
     switch (cxx)
     {
@@ -22,7 +22,7 @@ const QString cxxToString(const Types::CXX cxx)
     }
 }
 
-Types::CXX stringToCXX(const QString &str)
+Types::CXX stringToCXX(const QString &str) noexcept
 {
     if (str == "STD11")
         return Types::CXX::STD11;
@@ -39,7 +39,7 @@ Types::CXX stringToCXX(const QString &str)
     return Types::CXX::STD98;
 }
 
-const QString languageToString(const Types::Language lang)
+const QString languageToString(const Types::Language lang) noexcept
 {
     switch (lang)
     {
@@ -64,7 +64,7 @@ const QString languageToString(const Types::Language lang)
     }
 }
 
-Types::Language stringToLanguage(const QString &str)
+Types::Language stringToLanguage(const QString &str) noexcept
 {
     if (str == "Dutch")
         return Types::Language::Dutch;
@@ -84,7 +84,7 @@ Types::Language stringToLanguage(const QString &str)
     return Types::Language::English;
 }
 
-const QString syntaxToString(const Types::Syntax syntax)
+const QString syntaxToString(const Types::Syntax syntax) noexcept
 {
     switch (syntax)
     {
@@ -97,7 +97,7 @@ const QString syntaxToString(const Types::Syntax syntax)
     }
 }
 
-Types::Syntax stringToSyntax(const QString &str)
+Types::Syntax stringToSyntax(const QString &str) noexcept
 {
     if (str == "CXX")
         return Types::Syntax::CXX;
@@ -105,7 +105,7 @@ Types::Syntax stringToSyntax(const QString &str)
     return Types::Syntax::None;
 }
 
-const QString themeToString(const Types::Theme theme)
+const QString themeToString(const Types::Theme theme) noexcept
 {
     switch (theme)
     {
@@ -121,7 +121,7 @@ const QString themeToString(const Types::Theme theme)
     }
 }
 
-Types::Theme stringToTheme(const QString &str)
+Types::Theme stringToTheme(const QString &str) noexcept
 {
     if (str == "QtCurve")
         return Types::Theme::QtCurve;

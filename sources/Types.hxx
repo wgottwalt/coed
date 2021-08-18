@@ -49,14 +49,14 @@ Q_DECLARE_METATYPE(Types::Syntax)
 Q_DECLARE_METATYPE(Types::TextAction)
 Q_DECLARE_METATYPE(Types::Theme)
 
-const QString cxxToString(const Types::CXX cxx);
-Types::CXX stringToCXX(const QString &str);
+const QString cxxToString(const Types::CXX cxx) noexcept;
+Types::CXX stringToCXX(const QString &str) noexcept;
 
-const QString languageToString(const Types::Language lang);
-Types::Language stringToLanguage(const QString &str);
+const QString languageToString(const Types::Language lang) noexcept;
+Types::Language stringToLanguage(const QString &str) noexcept;
 
-const QString syntaxToString(const Types::Syntax syntax);
-Types::Syntax stringToSyntax(const QString &str);
+const QString syntaxToString(const Types::Syntax syntax) noexcept;
+Types::Syntax stringToSyntax(const QString &str) noexcept;
 
-const QString themeToString(const Types::Theme theme);
-Types::Theme stringToTheme(const QString &str);
+const QString themeToString(const Types::Theme theme) noexcept;
+Types::Theme stringToTheme(const QString &str) noexcept;
