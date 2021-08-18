@@ -2,57 +2,53 @@
 
 //--- internal stuff ---
 
-static const QString CXX98keywords("and and_eq asm auto bitand bitor break case catch compl "
+static const QString CXX98keywords{"and and_eq asm auto bitand bitor break case catch compl "
                                    "const_cast continue default delete do dynamic_cast else "
                                    "explicit export extern false for friend goto if inline "
                                    "new not not_eq operator or or_eq private protected "
                                    "public reinterpret_cast return sizeof static "
                                    "static_cast switch this throw true try "
-                                   "typeid using while xor xor_eq");
-static const QString CXX11keywords("static_assert");
-static const QString CXX20keywords("co_await co_return co_yield");
+                                   "typeid using while xor xor_eq"};
+static const QString CXX11keywords{"static_assert"};
+static const QString CXX20keywords{"co_await co_return co_yield"};
 
-static const QString CXX98types("bool char class double enum float int long namespace register "
+static const QString CXX98types{"bool char class double enum float int long namespace register "
                                 "short signed struct template typedef typename union unsigned "
-                                "wchar_t");
-static const QString CXX11types("char16_t char32_t constexpr decltype thread_local");
-static const QString CXX20types("char8_t concept requires");
+                                "wchar_t"};
+static const QString CXX11types{"char16_t char32_t constexpr decltype thread_local"};
+static const QString CXX20types{"char8_t concept requires"};
 
-static const QString CXX98modifiers("const mutable virtual void volatile");
-static const QString CXX11modifiers("alignas alignof constexpr");
-static const QString CXX20modifiers("consteval constinit");
+static const QString CXX98modifiers{"const mutable virtual void volatile"};
+static const QString CXX11modifiers{"alignas alignof constexpr"};
+static const QString CXX20modifiers{"consteval constinit"};
 
-static const QString Prepro("define elif else endif error if ifdef include line pragma undef "
-                            "warning");
+static const QString Prepro{"define elif else endif error if ifdef include line pragma undef "
+                            "warning"};
 
 //--- public constructors ---
 
 SyntaxCXX::SyntaxCXX(QTextDocument *parent)
-: Syntax(parent), _keywords_format(), _types_format(), _modifiers_format(), _prepro_format(),
-  _slcomment_format(), _mlcomment_format(), _keywords_regexp(""), _types_regexp(""),
-  _modifiers_regexp(""), _prepro_regexp(""), _slcomment_regexp(""), _mlcomment_start_regexp(""),
-  _mlcomment_stop_regexp("")
+: Syntax{parent}, _keywords_format{}, _types_format{}, _modifiers_format{}, _prepro_format{},
+  _slcomment_format{}, _mlcomment_format{}, _keywords_regexp{}, _types_regexp{},
+  _modifiers_regexp{}, _prepro_regexp{}, _slcomment_regexp{}, _mlcomment_start_regexp{},
+  _mlcomment_stop_regexp{}
 {
     setStandard();
 }
 
-SyntaxCXX::~SyntaxCXX()
-{
-}
-
 //--- public methods ---
 
-Types::Syntax SyntaxCXX::type() const
+Types::Syntax SyntaxCXX::type() const noexcept
 {
     return Types::Syntax::CXX;
 }
 
-const QString SyntaxCXX::name() const
+const QString SyntaxCXX::name() const noexcept
 {
     return Syntax::toString(type());
 }
 
-void SyntaxCXX::highlightBlock(const QString &text)
+void SyntaxCXX::highlightBlock(const QString &text) noexcept(false)
 {
     ssize_t i = 0;
 
@@ -120,7 +116,7 @@ void SyntaxCXX::highlightBlock(const QString &text)
     }
 }
 
-void SyntaxCXX::setStandard(const Types::CXX mode)
+void SyntaxCXX::setStandard(const Types::CXX mode) noexcept(false)
 {
     QString keyword_pattern;
     QString types_pattern;

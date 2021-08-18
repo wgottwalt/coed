@@ -8,21 +8,21 @@ class SyntaxCXX : public Syntax {
     Q_OBJECT
 public:
     //--- public constructors ---
-    SyntaxCXX(QTextDocument *parent = nullptr);
-    SyntaxCXX(const SyntaxCXX &rhs) = delete;
-    SyntaxCXX(SyntaxCXX &&rhs) = delete;
-    virtual ~SyntaxCXX();
+    explicit SyntaxCXX(QTextDocument *parent = nullptr) noexcept(false);
+    SyntaxCXX(const SyntaxCXX &rhs) noexcept(false) = delete;
+    SyntaxCXX(SyntaxCXX &&rhs) noexcept = delete;
+    virtual ~SyntaxCXX() noexcept = default;
 
     //--- public operators ---
-    SyntaxCXX &operator=(const SyntaxCXX &rhs) = delete;
-    SyntaxCXX &operator=(SyntaxCXX &&rhs) = delete;
+    SyntaxCXX &operator=(const SyntaxCXX &rhs) noexcept(false) = delete;
+    SyntaxCXX &operator=(SyntaxCXX &&rhs) noexcept = delete;
 
     //--- public methods ---
-    virtual Types::Syntax type() const override final;
-    virtual const QString name() const override final;
+    virtual Types::Syntax type() const noexcept override final;
+    virtual const QString name() const noexcept override final;
 
-    virtual void highlightBlock(const QString &text) override final;
-    void setStandard(const Types::CXX mode = Types::CXX::STD98);
+    virtual void highlightBlock(const QString &text) noexcept(false) override final;
+    void setStandard(const Types::CXX mode = Types::CXX::STD98) noexcept(false);
 
 private:
     //--- private properties ---

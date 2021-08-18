@@ -3,18 +3,14 @@
 
 //--- public constructors ---
 
-Syntax::Syntax(QTextDocument *parent)
-: QSyntaxHighlighter(parent)
-{
-}
-
-Syntax::~Syntax()
+Syntax::Syntax(QTextDocument *parent) noexcept(false)
+: QSyntaxHighlighter{parent}
 {
 }
 
 //--- public methods ---
 
-const QString Syntax::toString(const Types::Syntax syntax)
+const QString Syntax::toString(const Types::Syntax syntax) noexcept
 {
     return syntaxToString(syntax);
 }
