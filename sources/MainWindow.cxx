@@ -29,8 +29,8 @@ MainWindow::MainWindow(QWidget *parent) noexcept(false)
     {
         move(_conf->value("mainwindow_position", QPoint(40, 40)).toPoint());
         resize(_conf->value("mainwindow_size", QSize(800, 600)).toSize());
-        _lang = stringToLanguage(_conf->value("language", "English").toString());
-        _theme = stringToTheme(_conf->value("theme", "Fusion").toString());
+        _lang = Types::stringToLanguage(_conf->value("language", "English").toString());
+        _theme = Types::stringToTheme(_conf->value("theme", "Fusion").toString());
         _darkmode = _conf->value("darkmode", "false").toBool();
     }
     else
@@ -65,8 +65,8 @@ MainWindow::~MainWindow() noexcept
     {
         _conf->setValue("mainwindow_position", pos());
         _conf->setValue("mainwindow_size", size());
-        _conf->setValue("language", languageToString(_lang));
-        _conf->setValue("theme", themeToString(_theme));
+        _conf->setValue("language", Types::languageToString(_lang));
+        _conf->setValue("theme", Types::themeToString(_theme));
         _conf->setValue("darkmode", _darkmode);
         _conf->sync();
     }

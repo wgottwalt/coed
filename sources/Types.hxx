@@ -41,6 +41,18 @@ namespace Types
         QtCurve,
         Windows
     };
+
+    const QString cxxToString(const CXX cxx) noexcept;
+    CXX stringToCXX(const QString &str) noexcept;
+
+    const QString languageToString(const Language lang) noexcept;
+    Language stringToLanguage(const QString &str) noexcept;
+
+    const QString syntaxToString(const Syntax syntax) noexcept;
+    Syntax stringToSyntax(const QString &str) noexcept;
+
+    const QString themeToString(const Theme theme) noexcept;
+    Theme stringToTheme(const QString &str) noexcept;
 }
 
 Q_DECLARE_METATYPE(Types::CXX)
@@ -48,15 +60,3 @@ Q_DECLARE_METATYPE(Types::Language)
 Q_DECLARE_METATYPE(Types::Syntax)
 Q_DECLARE_METATYPE(Types::TextAction)
 Q_DECLARE_METATYPE(Types::Theme)
-
-const QString cxxToString(const Types::CXX cxx) noexcept;
-Types::CXX stringToCXX(const QString &str) noexcept;
-
-const QString languageToString(const Types::Language lang) noexcept;
-Types::Language stringToLanguage(const QString &str) noexcept;
-
-const QString syntaxToString(const Types::Syntax syntax) noexcept;
-Types::Syntax stringToSyntax(const QString &str) noexcept;
-
-const QString themeToString(const Types::Theme theme) noexcept;
-Types::Theme stringToTheme(const QString &str) noexcept;
