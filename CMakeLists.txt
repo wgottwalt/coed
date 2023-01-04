@@ -14,8 +14,8 @@ SET                     (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/li
 # compiler settings
 IF                      (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     MESSAGE             ("--> building on Linux")
-    SET                 (CMAKE_CXX_FLAGS "-std=c++20 -pthread -flto -fPIC -W -Wall -Wextra -Os -s")
-    SET                 (CMAKE_C_FLAGS "-std=c17 -pthread -flto -fPIC -W -Wall -Wextra -Os -s")
+    SET                 (CMAKE_CXX_FLAGS "-std=c++20 -pthread -flto=auto -fPIC -W -Wall -Wextra -Os -s")
+    SET                 (CMAKE_C_FLAGS "-std=c17 -pthread -flto=auto -fPIC -W -Wall -Wextra -Os -s")
 ELSE                    ()
     MESSAGE             (FATAL_ERROR "--> unsupported build host: ${CMAKE_SYSTEM_NAME}")
 ENDIF                   ()
