@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QPalette>
 #include <QString>
+
 #include "ui_MainWindow.h"
 #include "Types.hxx"
 
@@ -15,25 +16,25 @@ class MainWindow : public QMainWindow, protected Ui::MainWindow {
     Q_OBJECT
 public:
     //--- public constructors ---
-    explicit MainWindow(QWidget *parent = nullptr) noexcept(false);
-    MainWindow(const MainWindow &rhs) noexcept(false) = delete;
+    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(const MainWindow &rhs) = delete;
     MainWindow(MainWindow &&rhs) noexcept = delete;
-    virtual ~MainWindow() noexcept;
+    ~MainWindow() noexcept override;
 
     //--- public operators ---
-    MainWindow &operator=(const MainWindow &rhs) noexcept(false) = delete;
+    MainWindow &operator=(const MainWindow &rhs) = delete;
     MainWindow &operator=(MainWindow &&rhs) noexcept = delete;
 
 protected:
     //--- protected methods ---
-    virtual void changeEvent(QEvent *event) noexcept(false) override final;
-    virtual void closeEvent(QCloseEvent *event) noexcept(false) override final;
+    void changeEvent(QEvent *event) final;
+    void closeEvent(QCloseEvent *event) final;
 
-    void setupActions() noexcept(false);
-    void setupToolbar() noexcept;
-    void setLanguage(const Types::Language lang = Types::Language::English) noexcept(false);
-    void setTheme(const Types::Theme theme = Types::Theme::Fusion) noexcept(false);
-    void setDarkmode(const bool mode) noexcept(false);
+    void setupActions();
+    void setupToolbar();
+    void setLanguage(Types::Language lang = Types::Language::English);
+    void setTheme(Types::Theme theme = Types::Theme::Fusion);
+    void setDarkmode(bool mode);
 
 private:
     //--- private properties ---
@@ -46,6 +47,6 @@ private:
     bool _darkmode;
 
     //--- private methods ---
-    EditorWindow *createEditor(const QString &filename = "") noexcept(false);
-    EditorWindow *currentEditor() noexcept(false);
+    EditorWindow *createEditor(const QString &filename = "");
+    EditorWindow *currentEditor();
 };
