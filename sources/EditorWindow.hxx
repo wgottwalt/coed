@@ -3,6 +3,7 @@
 #include <QString>
 #include <QPlainTextEdit>
 #include <QWidget>
+
 #include "Types.hxx"
 #include "ui_EditorWindow.h"
 
@@ -21,21 +22,21 @@ class LineNumberArea : public QWidget {
     Q_OBJECT
 public:
     //--- public constructor ---
-    explicit LineNumberArea(EditorArea *editor = nullptr) noexcept(false);
-    LineNumberArea(const LineNumberArea &rhs) noexcept(false) = delete;
+    explicit LineNumberArea(EditorArea *editor = nullptr);
+    LineNumberArea(const LineNumberArea &rhs) = delete;
     LineNumberArea(LineNumberArea &&rhs) noexcept = delete;
-    virtual ~LineNumberArea() noexcept override final = default;
+    ~LineNumberArea() noexcept override = default;
 
     //--- public operators ---
-    LineNumberArea &operator=(const LineNumberArea &rhs) noexcept(false) = delete;
+    LineNumberArea &operator=(const LineNumberArea &rhs) = delete;
     LineNumberArea &operator=(LineNumberArea &&rhs) noexcept = delete;
 
     //--- public methods ---
-    virtual QSize sizeHint() const noexcept override final;
+    [[nodiscard]] QSize sizeHint() const noexcept final;
 
 protected:
     //--- protected methods ---
-    virtual void paintEvent(QPaintEvent *event) noexcept(false) override final;
+    void paintEvent(QPaintEvent *event) final;
 
 private:
     //--- private properties ---
@@ -49,40 +50,40 @@ class EditorArea : public QPlainTextEdit {
     friend class LineNumberArea;
 public:
     //--- public constructors ---
-    explicit EditorArea(QWidget *parent = nullptr) noexcept(false);
-    EditorArea(const EditorArea &rhs) noexcept(false) = delete;
+    explicit EditorArea(QWidget *parent = nullptr);
+    EditorArea(const EditorArea &rhs) = delete;
     EditorArea(EditorArea &&rhs) noexcept = delete;
-    virtual ~EditorArea() noexcept override final;
+    ~EditorArea() noexcept override;
 
     //--- public operators ---
-    EditorArea &operator=(const EditorArea &rhs) noexcept(false) = delete;
+    EditorArea &operator=(const EditorArea &rhs) = delete;
     EditorArea &operator=(EditorArea &&rhs) noexcept = delete;
 
     //--- public methods ---
-    void setSmartFont(const bool on = true) noexcept(false);
-    bool smartFont() const noexcept;
-    void setWordWrap(const bool on = true) noexcept;
-    bool wordWrap() const noexcept;
-    void setShowLineNumbers(const bool on = true) noexcept;
-    bool showLineNumbers() const noexcept;
-    void setShowLineHighlight(const bool on = true) noexcept;
-    bool showLineHighlight() const noexcept;
-    void setTabsToSpaces(const bool on = false) noexcept;
-    bool tabsToSpaces() const noexcept;
-    void setTabWidth(const qint32 value = 8) noexcept;
-    qint32 tabWidth() const noexcept;
+    void setSmartFont(bool on = true);
+    [[nodiscard]] bool smartFont() const noexcept;
+    void setWordWrap(bool on = true) noexcept;
+    [[nodiscard]] bool wordWrap() const noexcept;
+    void setShowLineNumbers(bool on = true) noexcept;
+    [[nodiscard]] bool showLineNumbers() const noexcept;
+    void setShowLineHighlight(bool on = true) noexcept;
+    [[nodiscard]] bool showLineHighlight() const noexcept;
+    void setTabsToSpaces(bool on = false) noexcept;
+    [[nodiscard]] bool tabsToSpaces() const noexcept;
+    void setTabWidth(qint32 value = 8) noexcept;
+    [[nodiscard]] qint32 tabWidth() const noexcept;
 
 protected:
     //--- protected methods ---
-    virtual void changeEvent(QEvent *event) noexcept(false) override final;
-    virtual void resizeEvent(QResizeEvent *event) noexcept(false) override final;
-    virtual void keyPressEvent(QKeyEvent *event) noexcept(false) override final;
+    void changeEvent(QEvent *event) final;
+    void resizeEvent(QResizeEvent *event) final;
+    void keyPressEvent(QKeyEvent *event) final;
 
-    qint32 lineNumberAreaWidth() const noexcept;
-    void lineNumberAreaPaintEvent(QPaintEvent *event) noexcept(false);
-    void updateLineNumberAreaWidth(const qint32 new_block_count = 0) noexcept;
-    void updateLineNumberArea(const QRect &rect, const qint32 delta_y) noexcept(false);
-    void updateLineHighlight() noexcept(false);
+    [[nodiscard]] qint32 lineNumberAreaWidth() const noexcept;
+    void lineNumberAreaPaintEvent(QPaintEvent *event);
+    void updateLineNumberAreaWidth(qint32 new_block_count = 0) noexcept;
+    void updateLineNumberArea(const QRect &rect, qint32 delta_y);
+    void updateLineHighlight();
 
 private:
     //--- private properties ---
@@ -104,36 +105,35 @@ class EditorWindow : public QWidget, protected Ui::EditorWindow {
     Q_OBJECT
 public:
     //--- public constructors ---
-    explicit EditorWindow(QWidget *parent = nullptr) noexcept(false);
-    EditorWindow(const EditorWindow &rhs) noexcept(false) = delete;
+    explicit EditorWindow(QWidget *parent = nullptr);
+    EditorWindow(const EditorWindow &rhs) = delete;
     EditorWindow(EditorWindow &&rhs) noexcept = delete;
-    virtual ~EditorWindow() noexcept;
+    ~EditorWindow() noexcept override;
 
     //--- public operators ---
-    EditorWindow &operator=(const EditorWindow &rhs) noexcept(false) = delete;
+    EditorWindow &operator=(const EditorWindow &rhs) = delete;
     EditorWindow &operator=(EditorWindow &&rhs) noexcept = delete;
 
     //--- public methods ---
-    bool openFile(const QString &filename) noexcept(false);
-    bool saveFile(const QString &filename = "") noexcept(false);
-    void search(const QString &str, const QTextDocument::FindFlags flags, const bool use_regexp)
-        noexcept(false);
-    QString searchString() const noexcept;
-    QString filename() const noexcept;
-    bool undoIsReady() const noexcept;
-    bool redoIsReady() const noexcept;
-    bool textHasChanged() const noexcept;
-    bool filenameIsSet() const noexcept;
+    bool openFile(const QString &filename);
+    bool saveFile(const QString &filename = "");
+    void search(const QString &str, QTextDocument::FindFlags flags, bool use_regexp);
+    [[nodiscard]] QString searchString() const noexcept;
+    [[nodiscard]] QString filename() const noexcept;
+    [[nodiscard]] bool undoIsReady() const noexcept;
+    [[nodiscard]] bool redoIsReady() const noexcept;
+    [[nodiscard]] bool textHasChanged() const noexcept;
+    [[nodiscard]] bool filenameIsSet() const noexcept;
     QTextCursor textCursor() noexcept;
-    void doTextAction(const Types::TextAction action) noexcept;
+    void doTextAction(Types::TextAction action) noexcept;
 
 protected:
     //--- protected methods ---
-    virtual void changeEvent(QEvent *event) noexcept(false) override final;
-    void setupActions() noexcept(false);
-    void updateWindowTitle() noexcept(false);
-    void updatePanelLines() noexcept(false);
-    void updatePanelPosition() noexcept(false);
+    void changeEvent(QEvent *event) final;
+    void setupActions();
+    void updateWindowTitle();
+    void updatePanelLines();
+    void updatePanelPosition();
 
 private:
     //--- private properties ---
@@ -148,6 +148,6 @@ private:
     bool _filename_set;
 
     //--- private methods ---
-    Types::Syntax detectFileType(const QFile &file) const noexcept(false);
-    void switchSyntax(const qint32 index) noexcept(false);
+    [[nodiscard]] Types::Syntax detectFileType(const QFile &file) const;
+    void switchSyntax(qint32 index);
 };

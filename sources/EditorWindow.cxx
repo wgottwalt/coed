@@ -8,12 +8,12 @@
 
 //--- internal stuff ---
 
-static quint32 __counter = 0;
+static quint32 global_counter = 0;
 
 //--- LineNumberArea ---------------------------------------------------------//
 //--- public constructor ---
 
-LineNumberArea::LineNumberArea(EditorArea *editor) noexcept(false)
+LineNumberArea::LineNumberArea(EditorArea *editor)
 : QWidget{editor}, _editor{editor}
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -28,7 +28,7 @@ QSize LineNumberArea::sizeHint() const noexcept
 
 //--- protected methods ---
 
-void LineNumberArea::paintEvent(QPaintEvent *event) noexcept(false)
+void LineNumberArea::paintEvent(QPaintEvent *event)
 {
     _editor->lineNumberAreaPaintEvent(event);
 }
@@ -36,7 +36,7 @@ void LineNumberArea::paintEvent(QPaintEvent *event) noexcept(false)
 //--- EditorArea -------------------------------------------------------------//
 //--- public constructors ---
 
-EditorArea::EditorArea(QWidget *parent) noexcept(false)
+EditorArea::EditorArea(QWidget *parent)
 : QPlainTextEdit{parent}, ui_lna{new LineNumberArea{this}}, _font{QFont{"Fira Code", 12}},
   _fontw{QFontMetrics{_font}.horizontalAdvance(QLatin1Char{'X'})},
   _fonth{QFontMetrics{_font}.height()}, _tabwidth{8}, _use_smartfont{true}, _use_wordwrap{true},
@@ -60,7 +60,7 @@ EditorArea::~EditorArea() noexcept
 
 //--- public methods ---
 
-void EditorArea::setSmartFont(const bool on) noexcept(false)
+void EditorArea::setSmartFont(bool on)
 {
     if (_use_smartfont = on; on)
         _font = {"Fira Code", 12};
@@ -81,7 +81,7 @@ bool EditorArea::smartFont() const noexcept
     return _use_smartfont;
 }
 
-void EditorArea::setWordWrap(const bool on) noexcept
+void EditorArea::setWordWrap(bool on) noexcept
 {
     if (_use_wordwrap = on; on)
         setLineWrapMode(QPlainTextEdit::WidgetWidth);
@@ -95,7 +95,7 @@ bool EditorArea::wordWrap() const noexcept
     return _use_wordwrap;
 }
 
-void EditorArea::setShowLineNumbers(const bool on) noexcept
+void EditorArea::setShowLineNumbers(bool on) noexcept
 {
     _show_linenumbers = on;
     updateLineNumberAreaWidth();
@@ -107,7 +107,7 @@ bool EditorArea::showLineNumbers() const noexcept
     return _show_linenumbers;
 }
 
-void EditorArea::setShowLineHighlight(const bool on) noexcept
+void EditorArea::setShowLineHighlight(bool on) noexcept
 {
     _show_linehighlight = on;
     updateLineHighlight();
@@ -119,7 +119,7 @@ bool EditorArea::showLineHighlight() const noexcept
     return _show_linehighlight;
 }
 
-void EditorArea::setTabsToSpaces(const bool on) noexcept
+void EditorArea::setTabsToSpaces(bool on) noexcept
 {
     _tabs_to_spaces = on;
     setFocus();
@@ -130,7 +130,7 @@ bool EditorArea::tabsToSpaces() const noexcept
     return _tabs_to_spaces;
 }
 
-void EditorArea::setTabWidth(const qint32 value) noexcept
+void EditorArea::setTabWidth(qint32 value) noexcept
 {
     _tabwidth = value;
     setTabStopDistance(_fontw * _tabwidth);
@@ -144,7 +144,7 @@ qint32 EditorArea::tabWidth() const noexcept
 
 //--- protected methods ---
 
-void EditorArea::changeEvent(QEvent *event) noexcept(false)
+void EditorArea::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::PaletteChange)
         updateLineHighlight();
@@ -152,7 +152,7 @@ void EditorArea::changeEvent(QEvent *event) noexcept(false)
     QPlainTextEdit::changeEvent(event);
 }
 
-void EditorArea::resizeEvent(QResizeEvent *event) noexcept(false)
+void EditorArea::resizeEvent(QResizeEvent *event)
 {
     QRect rect;
 
@@ -161,7 +161,7 @@ void EditorArea::resizeEvent(QResizeEvent *event) noexcept(false)
     ui_lna->setGeometry({rect.left(), rect.top(), lineNumberAreaWidth(), rect.height()});
 }
 
-void EditorArea::keyPressEvent(QKeyEvent *event) noexcept(false)
+void EditorArea::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Tab)
     {
@@ -193,7 +193,7 @@ qint32 EditorArea::lineNumberAreaWidth() const noexcept
     return 0;
 }
 
-void EditorArea::lineNumberAreaPaintEvent(QPaintEvent *event) noexcept(false)
+void EditorArea::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
     if (_show_linenumbers)
     {
@@ -225,12 +225,12 @@ void EditorArea::lineNumberAreaPaintEvent(QPaintEvent *event) noexcept(false)
     }
 }
 
-void EditorArea::updateLineNumberAreaWidth([[maybe_unused]] const qint32 new_block_count) noexcept
+void EditorArea::updateLineNumberAreaWidth([[maybe_unused]] qint32 new_block_count) noexcept
 {
     setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
-void EditorArea::updateLineNumberArea(const QRect &rect, const qint32 delta_y) noexcept(false)
+void EditorArea::updateLineNumberArea(const QRect &rect, qint32 delta_y)
 {
     if (delta_y)
         ui_lna->scroll(0, delta_y);
@@ -241,7 +241,7 @@ void EditorArea::updateLineNumberArea(const QRect &rect, const qint32 delta_y) n
         updateLineNumberAreaWidth();
 }
 
-void EditorArea::updateLineHighlight() noexcept(false)
+void EditorArea::updateLineHighlight()
 {
     if (_show_linehighlight)
     {
@@ -263,10 +263,10 @@ void EditorArea::updateLineHighlight() noexcept(false)
 //--- EditorWindow -----------------------------------------------------------//
 //--- public constructors ---
 
-EditorWindow::EditorWindow(QWidget *parent) noexcept(false)
+EditorWindow::EditorWindow(QWidget *parent)
 : QWidget{parent}, Ui::EditorWindow{}, _filename{}, _search_string{}, _ui_edit{new EditorArea{this}},
-  _syntax{nullptr}, _id{__counter++}, _undo_ready{false}, _redo_ready{false}, _text_changed{false},
-  _filename_set{false}
+  _syntax{nullptr}, _id{global_counter++}, _undo_ready{false}, _redo_ready{false},
+  _text_changed{false}, _filename_set{false}
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -291,14 +291,13 @@ EditorWindow::EditorWindow(QWidget *parent) noexcept(false)
 
 EditorWindow::~EditorWindow() noexcept
 {
-    if (_syntax)
-        delete _syntax;
+    delete _syntax;
     delete _ui_edit;
 }
 
 //--- public methods/slots ---
 
-bool EditorWindow::openFile(const QString &filename) noexcept(false)
+bool EditorWindow::openFile(const QString &filename)
 {
     if (QFile ifile{filename}; ifile.exists() && ifile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -322,7 +321,7 @@ bool EditorWindow::openFile(const QString &filename) noexcept(false)
     return false;
 }
 
-bool EditorWindow::saveFile(const QString &filename) noexcept(false)
+bool EditorWindow::saveFile(const QString &filename)
 {
     if (QFile ofile{filename}; ofile.open(QIODevice::WriteOnly))
     {
@@ -341,8 +340,7 @@ bool EditorWindow::saveFile(const QString &filename) noexcept(false)
     return false;
 }
 
-void EditorWindow::search(const QString &str, const QTextDocument::FindFlags flags,
-    const bool use_regexp) noexcept(false)
+void EditorWindow::search(const QString &str, QTextDocument::FindFlags flags, bool use_regexp)
 {
     _search_string = str;
     if (use_regexp)
@@ -386,7 +384,7 @@ QTextCursor EditorWindow::textCursor() noexcept
     return _ui_edit->textCursor();
 }
 
-void EditorWindow::doTextAction(const Types::TextAction action) noexcept
+void EditorWindow::doTextAction(Types::TextAction action) noexcept
 {
     switch (action)
     {
@@ -422,7 +420,7 @@ void EditorWindow::doTextAction(const Types::TextAction action) noexcept
 
 //--- protected methods ---
 
-void EditorWindow::changeEvent(QEvent *event) noexcept(false)
+void EditorWindow::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::LanguageChange)
         retranslateUi(this);
@@ -430,7 +428,7 @@ void EditorWindow::changeEvent(QEvent *event) noexcept(false)
     QWidget::changeEvent(event);
 }
 
-void EditorWindow::setupActions() noexcept(false)
+void EditorWindow::setupActions()
 {
     connect(_ui_edit, &QPlainTextEdit::undoAvailable, [&](const bool a){ _undo_ready = a; });
     connect(_ui_edit, &QPlainTextEdit::redoAvailable, [&](const bool a){ _redo_ready = a; });
@@ -454,18 +452,18 @@ void EditorWindow::setupActions() noexcept(false)
         this, &EditorWindow::switchSyntax);
 }
 
-void EditorWindow::updateWindowTitle() noexcept(false)
+void EditorWindow::updateWindowTitle()
 {
     setWindowTitle("(" + QString::number(_id) + ") " +
         (_filename.size() ? _filename : tr("I18N_UNKNOWN_FILE")) + (_text_changed ? "*" : ""));
 }
 
-void EditorWindow::updatePanelLines() noexcept(false)
+void EditorWindow::updatePanelLines()
 {
     lab_lines->setText(QString::number(_ui_edit->document()->lineCount()));
 }
 
-void EditorWindow::updatePanelPosition() noexcept(false)
+void EditorWindow::updatePanelPosition()
 {
     const quint32 xpos = _ui_edit->textCursor().positionInBlock();
     const quint32 ypos = _ui_edit->textCursor().blockNumber();
@@ -475,7 +473,7 @@ void EditorWindow::updatePanelPosition() noexcept(false)
 
 //--- private methods ---
 
-Types::Syntax EditorWindow::detectFileType(const QFile &file) const noexcept(false)
+Types::Syntax EditorWindow::detectFileType(const QFile &file) const
 {
     const QFileInfo info{file};
 
@@ -486,7 +484,7 @@ Types::Syntax EditorWindow::detectFileType(const QFile &file) const noexcept(fal
     return Types::Syntax::None;
 }
 
-void EditorWindow::switchSyntax(const qint32 index) noexcept(false)
+void EditorWindow::switchSyntax(qint32 index)
 {
     if (index < 0)
         return;
@@ -514,7 +512,7 @@ void EditorWindow::switchSyntax(const qint32 index) noexcept(false)
                 static_cast<void (QComboBox::*)(qint32)>(&QComboBox::currentIndexChanged),
                 [this](const qint32 index)
                 {
-                    static_cast<SyntaxCXX *>(_syntax)->setStandard(
+                    dynamic_cast<SyntaxCXX *>(_syntax)->setStandard(
                         box_subsyntax->itemData(index).value<Types::CXX>());
                     _syntax->rehighlight();
                 }
