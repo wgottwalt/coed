@@ -2,8 +2,8 @@
 
 //--- public constructors ---
 
-SearchWindow::SearchWindow(QWidget *parent) noexcept(false)
-: QWidget(parent), Ui::SearchWindow()
+SearchWindow::SearchWindow(QWidget *parent)
+: QWidget{parent}, Ui::SearchWindow{}
 {
     setupUi(this);
     lay_main->setSizeConstraint(QLayout::SetFixedSize);
@@ -20,7 +20,7 @@ void SearchWindow::setSearchString(const QString &str) noexcept
 
 //--- protected methods ---
 
-void SearchWindow::changeEvent(QEvent *event) noexcept(false)
+void SearchWindow::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::LanguageChange)
         retranslateUi(this);
@@ -28,7 +28,7 @@ void SearchWindow::changeEvent(QEvent *event) noexcept(false)
     QWidget::changeEvent(event);
 }
 
-void SearchWindow::setupActions() noexcept(false)
+void SearchWindow::setupActions()
 {
     connect(btn_close, &QPushButton::clicked, this, &SearchWindow::close);
     connect(btn_prev, &QPushButton::clicked, [&]()

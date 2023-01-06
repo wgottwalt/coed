@@ -8,13 +8,13 @@ class SearchWindow : public QWidget, protected Ui::SearchWindow {
     Q_OBJECT
 public:
     //--- public constructors ---
-    explicit SearchWindow(QWidget *parent = nullptr) noexcept(false);
-    SearchWindow(const SearchWindow &rhs) noexcept(false) = delete;
+    explicit SearchWindow(QWidget *parent = nullptr);
+    SearchWindow(const SearchWindow &rhs) = delete;
     SearchWindow(SearchWindow &&rhs) noexcept = delete;
-    virtual ~SearchWindow() noexcept = default;
+    ~SearchWindow() noexcept override = default;
 
     //--- public operators ---
-    SearchWindow &operator=(const SearchWindow &rhs) noexcept(false) = delete;
+    SearchWindow &operator=(const SearchWindow &rhs) = delete;
     SearchWindow &operator=(SearchWindow &&rhs) noexcept = delete;
 
     //--- public methods ---
@@ -22,11 +22,10 @@ public:
 
 protected:
     //--- protected methods ---
-    virtual void changeEvent(QEvent *event) noexcept(false) override final;
-    void setupActions() noexcept(false);
+    void changeEvent(QEvent *event) final;
+    void setupActions();
 
 signals:
     //--- own signals ---
-    void searchRequest(const QString &str, const QTextDocument::FindFlags flags,
-        const bool use_regexp);
+    void searchRequest(const QString &str, QTextDocument::FindFlags flags, bool use_regexp);
 };
