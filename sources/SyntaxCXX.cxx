@@ -43,14 +43,15 @@ Types::Syntax SyntaxCXX::type() const noexcept
     return Types::Syntax::CXX;
 }
 
-const QString SyntaxCXX::name() const noexcept
+QString SyntaxCXX::name() const noexcept
 {
     return Syntax::toString(type());
 }
 
-void SyntaxCXX::highlightBlock(const QString &text) noexcept(false)
+void SyntaxCXX::highlightBlock(const QString &text)
 {
-    ssize_t i = 0;
+    qint32 i;
+    qint32 len;
 
     setCurrentBlockState(0);
 
@@ -58,8 +59,7 @@ void SyntaxCXX::highlightBlock(const QString &text) noexcept(false)
     i = text.indexOf(_keywords_regexp);
     while (i >= 0)
     {
-        const size_t len = _keywords_regexp.matchedLength();
-
+        len = _keywords_regexp.matchedLength();
         setFormat(i, len, _keywords_format);
         i = text.indexOf(_keywords_regexp, i + len);
     }
@@ -68,8 +68,7 @@ void SyntaxCXX::highlightBlock(const QString &text) noexcept(false)
     i = text.indexOf(_types_regexp);
     while (i >= 0)
     {
-        const size_t len = _types_regexp.matchedLength();
-
+        len = _types_regexp.matchedLength();
         setFormat(i, len, _types_format);
         i = text.indexOf(_types_regexp, i + len);
     }
@@ -78,8 +77,7 @@ void SyntaxCXX::highlightBlock(const QString &text) noexcept(false)
     i = text.indexOf(_modifiers_regexp);
     while (i >= 0)
     {
-        const size_t len = _modifiers_regexp.matchedLength();
-
+        len = _modifiers_regexp.matchedLength();
         setFormat(i, len, _modifiers_format);
         i = text.indexOf(_modifiers_regexp, i + len);
     }
@@ -100,8 +98,7 @@ void SyntaxCXX::highlightBlock(const QString &text) noexcept(false)
         i = text.indexOf(_mlcomment_start_regexp);
     while (i >= 0)
     {
-        ssize_t i_end = text.indexOf(_mlcomment_stop_regexp, i);
-        ssize_t len = 0;
+        qint32 i_end = text.indexOf(_mlcomment_stop_regexp, i);
 
         if (i_end == -1)
         {
@@ -116,7 +113,7 @@ void SyntaxCXX::highlightBlock(const QString &text) noexcept(false)
     }
 }
 
-void SyntaxCXX::setStandard(const Types::CXX mode) noexcept(false)
+void SyntaxCXX::setStandard(const Types::CXX mode)
 {
     QString keyword_pattern;
     QString types_pattern;
@@ -153,8 +150,6 @@ void SyntaxCXX::setStandard(const Types::CXX mode) noexcept(false)
             [[fallthrough]];
 
         case Types::CXX::STD17:
-            [[fallthrough]];
-
         case Types::CXX::STD14:
             [[fallthrough]];
 

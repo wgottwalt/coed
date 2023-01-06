@@ -2,27 +2,28 @@
 
 #include <QRegExp>
 #include <QTextCharFormat>
+
 #include "Syntax.hxx"
 
 class SyntaxCXX : public Syntax {
     Q_OBJECT
 public:
     //--- public constructors ---
-    explicit SyntaxCXX(QTextDocument *parent = nullptr) noexcept(false);
-    SyntaxCXX(const SyntaxCXX &rhs) noexcept(false) = delete;
+    explicit SyntaxCXX(QTextDocument *parent = nullptr);
+    SyntaxCXX(const SyntaxCXX &rhs) = delete;
     SyntaxCXX(SyntaxCXX &&rhs) noexcept = delete;
-    virtual ~SyntaxCXX() noexcept = default;
+    ~SyntaxCXX() noexcept override = default;
 
     //--- public operators ---
-    SyntaxCXX &operator=(const SyntaxCXX &rhs) noexcept(false) = delete;
+    SyntaxCXX &operator=(const SyntaxCXX &rhs) = delete;
     SyntaxCXX &operator=(SyntaxCXX &&rhs) noexcept = delete;
 
     //--- public methods ---
-    virtual Types::Syntax type() const noexcept override final;
-    virtual const QString name() const noexcept override final;
+    [[nodiscard]] Types::Syntax type() const noexcept final;
+    [[nodiscard]] QString name() const noexcept final;
 
-    virtual void highlightBlock(const QString &text) noexcept(false) override final;
-    void setStandard(const Types::CXX mode = Types::CXX::STD98) noexcept(false);
+    void highlightBlock(const QString &text) final;
+    void setStandard(Types::CXX mode = Types::CXX::STD98);
 
 private:
     //--- private properties ---

@@ -1,16 +1,17 @@
 #include <QTextDocument>
+
 #include "Syntax.hxx"
 
 //--- public constructors ---
 
-Syntax::Syntax(QTextDocument *parent) noexcept(false)
+Syntax::Syntax(QTextDocument *parent)
 : QSyntaxHighlighter{parent}
 {
 }
 
 //--- public methods ---
 
-const QString Syntax::toString(const Types::Syntax syntax) noexcept
+QString Syntax::toString(Types::Syntax syntax) noexcept
 {
     return syntaxToString(syntax);
 }
