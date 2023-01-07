@@ -2,7 +2,7 @@
 
 namespace Types
 {
-    const QString cxxToString(const CXX cxx) noexcept
+    QString cxxToString(CXX cxx) noexcept
     {
         switch (cxx)
         {
@@ -41,7 +41,7 @@ namespace Types
         return CXX::STD98;
     }
 
-    const QString languageToString(const Language lang) noexcept
+    QString languageToString(Language lang) noexcept
     {
         switch (lang)
         {
@@ -86,7 +86,7 @@ namespace Types
         return Language::English;
     }
 
-    const QString syntaxToString(const Syntax syntax) noexcept
+    QString syntaxToString(Syntax syntax) noexcept
     {
         switch (syntax)
         {
@@ -107,7 +107,7 @@ namespace Types
         return Syntax::None;
     }
 
-    const QString themeToString(const Theme theme) noexcept
+    QString themeToString(Theme theme) noexcept
     {
         switch (theme)
         {

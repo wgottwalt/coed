@@ -42,16 +42,16 @@ namespace Types
         Windows
     };
 
-    const QString cxxToString(const CXX cxx) noexcept;
+    QString cxxToString(CXX cxx) noexcept;
     CXX stringToCXX(const QString &str) noexcept;
 
-    const QString languageToString(const Language lang) noexcept;
+    QString languageToString(Language lang) noexcept;
     Language stringToLanguage(const QString &str) noexcept;
 
-    const QString syntaxToString(const Syntax syntax) noexcept;
+    QString syntaxToString(Syntax syntax) noexcept;
     Syntax stringToSyntax(const QString &str) noexcept;
 
-    const QString themeToString(const Theme theme) noexcept;
+    QString themeToString(Theme theme) noexcept;
     Theme stringToTheme(const QString &str) noexcept;
 }
 
